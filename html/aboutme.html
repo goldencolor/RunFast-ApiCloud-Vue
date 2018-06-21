@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>关于我们</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:70%;
+          height:80%;
+          background-image: url(../image/share_bg.png);
+          background-size: 100% 100%;
+          margin: 7% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:80%;
+          height:60%;
+          position: relative;
+          top:25%;
+          left:10%;
+          overflow-y: scroll;
+          font-size: 12px;
+          color:#BD883A;
+          text-align: center;
+        }
+        .info::-webkit-scrollbar {
+            display: none;
+        }
+        .info p{
+          text-align: center;
+          font-size: 14px;
+          padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="info" v-html="content"></div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+    var app = new Vue({
+      el:"#app",
+      data:{
+        content:`<p>关于我们</p><br/>
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;佰信乐是一家四川眉山本地的网络科技公司，
+        公司成立于2017年，立足眉山本地，整合本
+        地资源，通过最新互联网前沿技术，打造属
+        于眉山及四川本土的互联网产品。<br/><br/>
+
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;佰信乐以“诚信”作为公司和每位员工的行为
+        准则，以“超越用户期望”为目标，致力于为眉山
+        及四川本地用户提供属于自己的具有本地特色的
+        网络平台，集吃喝玩乐等等方式，打造更好更科
+        学，更为现代化的本土生活方式。<br/><br/>
+
+          眉山市彭山区佰信乐网络科技有限责任公司
+
+          `
+          ,
+      },
+      methods:{
+        closeme:function(){
+          api.closeFrame({
+              name: '关于'
+          });
+        }
+      }
+    })
+
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+  }
+
+</script>
+</html>

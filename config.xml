@@ -1,0 +1,31 @@
+ <widget id="A6055428611678"  version="0.0.1">
+    <name>Runfast</name>
+    <description>
+        Example For APICloud.
+    </description>
+    <author email="developer@apicloud.com" href="http://www.apicloud.com">
+        Developer
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="pageBounce" value="false"/>
+	<preference name="appBackground" value="rgba(0,0,0,0.0)"/>
+	<preference name="windowBackground" value="rgba(0,0,0,0.0)"/>
+	<preference name="frameBackgroundColor" value="rgba(0,0,0,0.0)"/>
+	<preference name="hScrollBarEnabled" value="true"/>
+	<preference name="vScrollBarEnabled" value="true"/>
+	<preference name="autoLaunch" value="true"/>
+	<preference name="fullScreen" value="false"/>
+	<preference name="autoUpdate" value="true" />
+	<preference name="smartUpdate" value="false" />
+	<preference name="debug" value="true"/>
+	<preference name="statusBarAppearance" value="true"/>
+	<permission name="readPhoneState" />
+	<permission name="camera" />
+	<permission name="record" />
+	<permission name="location" />
+	<permission name="fileSystem" />
+	<permission name="internet" />
+	<permission name="bootCompleted" />
+	<permission name="hardware" />  <preference name="softInputMode" value="pan"/>  <permission name="record" />  <feature name="tencentPush">          <param name="android_accessId" value="2100264691" />          <param name="android_accessKey" value="A9S4E3A15KSD" />  </feature>  <feature name="wx">    <param name="urlScheme" value="wx23cb7424da4c4aa0"/>    <param name="apiKey" value="wx23cb7424da4c4aa0"/>    <param name="apiSecret" value="b1786275ae44222ef41fb3e66cd7b828"/>  </feature>
+</widget>

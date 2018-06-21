@@ -1,0 +1,365 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>战绩</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:70%;
+          height:70%;
+          background-image: url(../image/history_bg.png);
+          background-size: 100% 100%;
+          margin: 7% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:80%;
+          height:60%;
+          position: relative;
+          top:32%;
+          left:10%;
+          overflow-y: scroll;
+        }
+        .info::-webkit-scrollbar {
+            display: none;
+        }
+        .info .tip{
+          width:100%;
+          height:20px;
+          position: relative;
+          top:40%;
+          font-size: 14px;
+          text-align: center;
+          color:#BD883A;
+        }
+        .info>table {
+          width:100%;
+          background-color: #EFB97D;
+        }
+        .info>table td{
+          height:35px;
+          line-height:35px;
+          font-size: 10px;
+          color:#B97B43;
+          text-align: center;
+          width:14%;
+        }
+        .info>table td:nth-child(1){
+          width:30%;
+        }
+
+        .loading {
+          text-align: left;
+        }
+        .loading img {
+          width:15px;
+          height:15px;
+          position: relative;
+          top:3px
+        }
+        #app .main .title{
+            position: fixed;
+            top:26%;
+            width:56%;
+            left:22%;
+            height:30px;
+            line-height:30px;
+            font-size: 10px;
+            color:#B97B43;
+            display: flex;
+            flex-direction: row;
+            flex-wrap:nowrap;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        #app .main .title b {
+          display:block;
+          width:14%;
+          text-align: center;
+          background-color: #EFB97D;
+        }
+        #app .main .title b:nth-child(1){
+          width:30%
+        }
+        #left {
+          width:30%;
+          height:calc(100% - 2px);
+          background-color: #FCD9A8;
+          border-right: 5px solid #950707;
+          position: fixed;
+          z-index: 999;
+          top:1px;
+          left:-100%;
+          transition: 500ms;
+          overflow-y: scroll;
+        }
+        #left::-webkit-scrollbar {
+            display: none;
+        }
+        #left .head {
+          position: fixed;
+          width:30%;
+          height:30px;
+          line-height:30px;
+          font-size: 10px;
+          color:#B97B43;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:nowrap;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
+        #left .foot {
+          width:100%;
+          height:30px;
+          line-height:30px;
+          font-size: 10px;
+          color:#B97B43;
+          text-align: center;
+        }
+        #left .head b {
+          display:block;
+          width:25%;
+          text-align: center;
+          background-color: #EFB97D;
+        }
+        #left table {
+          width:100%;
+          margin-top:31px
+        }
+        #left table tr {
+          width:100%;
+          background-color: #EFB97D;
+        }
+        #left table tr td {
+          width:25%;
+          text-align: center;
+          height:30px;
+          line-height:30px;
+          font-size: 10px;
+          color:#B97B43;
+        }
+        .share {
+          width: 50%;
+          height: 55px;
+          background-image: url(../image/game/game_invite.png);
+          line-height: 50px;
+          color: white;
+          font-size: 18px;
+          font-weight: 700;
+          margin: 20px auto;
+          background-size: 100% 100%;
+          text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak v-on:click="hiddenleft">
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="title" v-if="has">
+              <b>开始时间</b> <b>房间号</b> <b>游戏类型</b>  <b>房间类型</b>  <b>局数</b> <b>积分</b>
+            </div>
+            <div class="info" v-on:scroll="scroll">
+                <table v-if="has" class="table">
+                  <tr v-for="li in lists" v-on:click="showinfo(li.id,$event)" class="list"> <td>{{li.date}}</td> <td>{{li.room}}</td> <td>{{li.gametype}}</td> <td>{{li.roomtype}}</td> <td>{{li.rounds}}</td> <td>{{li.score}}</td></tr>
+                  <tr> <td></td> <td></td> <td class="loading"><img  src="../image/loading_more.gif" v-if="loading"></td> <td></td> <td></td> <td></td></tr>
+                </table>
+                <p class="tip" v-else>{{tips}}</p>
+            </div>
+        </div>
+        <div id="left">
+          <div class="head"><b>局数</b> <b>炸弹</b> <b>倍率</b>  <b>分数</b></div>
+          <table>
+            <tr v-for="li in roundinfo"> <td>第{{li.round}}局</td> <td>{{li.boom}}</td> <td>{{li.double}}倍</td> <td>{{li.score}}分</td></tr>
+
+          </table>
+          <div class="foot"> 更多对局详情请关注公众号查询 </div>
+          <div class="share" @click="shareToWechat">分享战绩</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  var app ;
+  apiready = function(){
+    app = new Vue({
+      el:"#app",
+      data:{
+        tips:"您还没有参与过牌局,快去邀请好友一起游戏吧!",
+        has:false,
+        loading:false,
+        page:1,
+        lists:[
+          //{date:"",room:"",gametype:"",roomtype:"",rounds:"",score:""}
+        ],
+        roundinfo:[
+          //{round:"",boom:"",double:"",score:""}
+        ],
+        checkID: ''
+      },
+      methods:{
+        //分享到微信
+        shareToWechat: function () {
+          console.log(o_url + 'last_round_score', this.checkID)
+          $api.post(o_url + 'last_round_score',{
+            values:{
+              room_id: this.checkID
+            }
+          },function(ret){
+            if(ret.error == 0){
+              var str =  '本局分数--' + ret.msg[0].name + ':' + ret.msg[0].score + '|' + ret.msg[1].name + ':' + ret.msg[1].score + '|' + ret.msg[2].name + ':' + ret.msg[2].score + '|' + ret.msg[3].name + ':' + ret.msg[3].score
+              alert("测试版无法直接分享，敬请期待！" + str)
+            } else {
+              alert(ret.msg)
+            }
+          },'json');
+        },
+        //scroll
+        scroll:function(){
+          var s_top = $api.dom('.info').scrollTop;
+          var w_top = $api.dom('.info').clientHeight;
+          var all_top = $api.dom('.table').clientHeight;
+          if((s_top +  w_top + 1)  >=  all_top){
+            if(app.loading == true){return;}
+            app.loading = true;
+            getlist(app.page)
+          }
+        },
+        //全局点击
+        allclick:function(){
+          music_small();
+        },
+        closeme:function(){
+          api.closeFrame({
+              name: '战绩'
+          });
+        },
+        //查看详情
+        showinfo:function(id,e){
+          this.checkID = id
+          this.roundinfo = [];
+          $api.post(o_url + 'one_room_round',{
+            values:{
+              cid:$api.getStorage("token"),
+              room_id:id
+            }
+          },function(ret){
+            if(ret.error == 0){
+              $api.dom("#left").style.left = "0%";
+              var datas = ret.msg;
+              for(var i=0,len=datas.length;i<len;i++){
+                var obj = {};
+                obj.round = datas[i].round_id;
+                switch(datas[i].bomb_nums){
+                  case 0:
+                    obj.boom = "无炸"
+                    break;
+                  default:
+                    obj.boom = "有炸"
+                    break;
+                }
+
+                obj.double = datas[i].bei_lu;
+                obj.score = datas[i].score;
+                app.roundinfo.push(obj);
+              }
+            }
+          },'json');
+
+          var all = $api.domAll('.list');
+          for(var i=0,len=all.length;i<len;i++){
+            all[i].style.backgroundColor = "#EFB97D";
+          }
+          e.target.parentNode.style.backgroundColor = "#FFDC52";
+        },
+        //隐藏left
+        hiddenleft:function(){
+          $api.dom("#left").style.left = "-100%";
+        },
+      }
+    })
+    //获取列表
+    getlist(app.page);
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+
+  }
+
+  function getlist(page){
+    //获取充值记录
+    $api.post(o_url + 'joined_room',{
+      values:{
+        cid:$api.getStorage("token"),
+        page:page
+      }
+    },function(ret){
+      app.loading = false;
+      if(ret.error == 0){
+        if(ret.msg.length > 0){
+          app.has = true
+        }else{
+          api.toast({msg:"没有更多了",location:'middle'})
+          return;
+        }
+        app.page++;
+        var datas = ret.msg;
+        for(var i=0,len=datas.length;i<len;i++){
+          var obj = {};
+          obj.date = getLocalTime(datas[i].room_date);
+          obj.room = datas[i].room_code;
+          switch(datas[i].room_all_type){
+            case "0":
+                obj.gametype = "乐山玩法"
+                break;
+          }
+          switch(datas[i].room_type){
+            case "0":
+                obj.roomtype = "黑桃5上庄"
+                break;
+            case "1":
+                obj.roomtype = "霸王庄"
+                break;
+            case "2":
+                obj.roomtype = "压牌随机庄"
+                break;
+            case "3":
+                obj.roomtype = "压牌霸王庄"
+                break;
+          }
+
+          obj.rounds = datas[i].round_times;
+          obj.score = datas[i].all_score;
+          obj.id = datas[i].room_id;
+          app.lists.push(obj)
+        }
+      }
+    },'json');
+  }
+
+</script>
+</html>

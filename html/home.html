@@ -1,0 +1,504 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>主页</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../css/home.css" /> -->
+    <style>
+        *{
+          padding:0;
+          margin:0;
+        }
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+        }
+        #app{
+          background-image: url(../image/login_bg.jpg);
+          background-size: 100% 100%;
+        }
+        [v-cloak]{
+          display:none;
+        }
+        /* $$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
+
+        .top{
+          width:100%;
+          height:18%;
+          background-color: rgba(0,0,0,0.3);
+        }
+        .top > div {
+          width:100%;
+          height:80%;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:nowrap;
+          justify-content: space-around;
+          align-items: flex-end;
+        }
+        .top .t-left,.top .t-right {
+          width:35%;
+          height:80%;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:nowrap;
+          justify-content: space-around;
+          align-items: flex-end;
+        }
+        .top .t-logo{
+          width:25%;
+          height:115%;
+          position: relative;
+          top:20%;
+          background-image: url(../image/logo.png);
+          background-size: 100% 100%;
+        }
+        .top .t-left .t-header{
+          width:20%;
+          height:100%;
+          background-size: 100% 100%;
+          border-radius: 10px;
+        }
+        .top .t-left .t-header img {
+          width:100%;
+          height:100%;
+        }
+        .top .t-left .t-info{
+          width:36%;
+          height:80%;
+        }
+        .top .t-left .t-info p,.top .t-left .t-money  {
+          width:100%;
+          height:20px;
+          line-height:15px;
+          font-size:10px;
+          color:#fff;
+
+        }
+        .top .t-left .t-info p {
+          overflow: hidden; /*自动隐藏文字*/
+          text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+          white-space: nowrap;/*强制不换行*/
+        }
+        .top .t-left .t-money {
+          height:16px;
+        }
+        .top .t-left .t-info p img {
+          width:13px;
+          height:13px;
+          position: relative;
+          top:3px;
+        }
+        .top .t-left .t-info p span{
+          margin-left:5px;
+        }
+        .top .t-left .t-money  span {
+          position: relative;
+          top:-22px;
+          left:-15px;
+        }
+        .top .t-left .t-money  .money{
+          width:35px;
+          height:35px;
+          position: relative;
+          top:-10px;
+          left:-15px;
+        }
+        .top .t-left .t-money  .addmoney {
+          width:15px;
+          height:15px;
+          float:right;
+        }
+        .top .t-left .t-money{
+          width:35%;
+          background-color: rgba(0,0,0,0.5);
+        }
+        .top .t-right .btn {
+          width:18%;
+          height:100%;
+          text-align: center;
+        }
+        .top .t-right .btn img{
+          width:65%;
+          height:70%;
+        }
+        .top .t-right .btn p {
+          font-size: 12px;
+          color:#FCE0A2;
+          font-weight: 400;
+        }
+
+        /* $$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
+
+        .tips {
+          width:60%;
+          height:25px;
+          background-image: url(../image/home_tips_bg.png);
+          background-size: 100% 100%;
+          margin:2% auto;
+        }
+        .tips .tip{
+          width:80%;
+          height:100%;
+          float:right;
+          overflow: hidden;
+          margin-right:10%;
+        }
+        .tips .tip p {
+          width:100%;
+          height:100%;
+          position: relative;
+          line-height: 25px;
+          font-size: 14px;
+          color:#dddddd;
+          animation: run 20s linear infinite;
+        }
+        .tips  img {
+          width:15px;
+          height:15px;
+          margin-top:5px;
+          float:right;
+        }
+        @keyframes run
+        {
+            0%   {left:100%;}
+            100% {left:-100%;}
+        }
+
+        /* $$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
+        .main {
+          width:55%;
+          height:64%;
+          background-image: url(../image/home_main.png);
+          background-size: 100% 100%;
+          position: absolute;
+          bottom:5%;
+          left:10%;
+          z-index: 9
+        }
+        .main .content {
+          width:90%;
+          height:70%;
+          position: relative;
+          top:20%;
+          left:5%;
+          overflow-y:scroll;
+          color:#AB711F;
+          text-align: center;
+          font-size: 15px;
+        }
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+        .main .content .rooms{
+          width:100%;
+          height:85%;
+          position: relative;
+          top:15%;
+        }
+        .main .content .rooms>p{
+          width:100%;
+          height:20px;
+          position: relative;
+          top:40%;
+          text-align: center;
+          color:#BD883A;
+          font-size: 16px;
+        }
+        .main .content .rooms>div {
+          width:100%;
+          height:100%;
+          overflow-y: scroll;
+        }
+        .main .content .rooms>div::-webkit-scrollbar {
+            display: none;
+        }
+        .main .content .rooms>div .h-title{
+          display: flex;
+          flex-direction: row;
+          flex-wrap:nowrap;
+          justify-content: space-between;
+          align-items:center;
+          width:100%;
+          height:20px;
+          background-color: #B97A44;
+          text-align: center;
+          line-height: 20px;
+          position: fixed;
+          width:49.5%;
+          top:44.5%;
+        }
+        .main .content .rooms>div .h-body{
+          display: flex;
+          flex-direction: row;
+          flex-wrap:nowrap;
+          justify-content: space-between;
+          align-items:center;
+          width:100%;
+          height:40px;
+          background-color: #DBA873;
+          text-align: center;
+          line-height: 40px;
+          margin-top: 5px;
+        }
+        .main .content .rooms>div .h-body img {
+          width:80%;
+          height:70%;
+          position: relative;
+          top:6px;
+        }
+        .main .content .rooms>div .h-title div,.main .content .rooms>div .h-body div{
+          width:25%;
+          height:100%;
+          color:white;
+          font-size: 14px;
+          font-weight: bolder;
+        }
+        /* $$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
+
+        .adv , .room {
+          width:5%;
+          height:25%;
+          position: absolute;
+          bottom:15%;
+          left:5%;
+          background-size: 100% 100%;
+        }
+        .adv {
+          bottom:35%;
+        }
+        .adv span , .room span {
+          display:block;
+          width:12px;
+          height:50px;
+          color:white;
+          font-size: 11px;
+          font-weight: bold;
+          margin: 0 auto;
+          margin-top:50%;
+        }
+
+        /* $$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
+
+        .new ,.old {
+          width:24%;
+          height:20%;
+          background-image: url(../image/home_btn_old.png);
+          background-size: 100% 100%;
+          position: absolute;
+          bottom:15%;
+          right:5%;
+          z-index: 9
+        }
+        .new {
+          bottom:40%;
+          background-image: url(../image/home_btn_new.png);
+        }
+
+        /* $$$$$$$$$$$$$$$$$$$$$$$$$$$$ */
+
+        .more {
+          width:13%;
+          height:60%;
+          background-image: url(../image/home_more.png);
+          background-size: 100% 100%;
+          position: absolute;
+          z-index: 9999;
+          right:20px;
+          top: 15%;
+        }
+        .more .null{
+          width:100%;
+          height:5%;
+        }
+        .more .item{
+          width:100%;
+          height:19%;
+          box-sizing: border-box;
+          border-top:1px solid #FBDEA4;
+          text-align: center;
+          line-height:280%;
+          font-size:13px;
+          color:#FBDEA4;
+        }
+        .more .item:nth-child(2){
+          border-top:none;
+        }
+        .more .item img {
+          width:15px;
+          height:15px;
+          position: relative;
+          top:3px;
+          right:5px;
+        }
+
+
+
+
+        #set{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.5);
+          position: fixed;
+          top:0;
+          z-index: 99999;
+          display:none;
+        }
+        #set .main {
+          width:50%;
+          height:60%;
+          background-image: url(../image/setting_bg.png);
+          background-size: 100% 100%;
+          position: relative;
+          top:20%;
+          left:25%;
+        }
+        #set .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        #set .info {
+          width:80%;
+          height:60%;
+          position: relative;
+          top:25%;
+          left:10%;
+          overflow-y: scroll;
+          font-size: 14px;
+          color:#BD883A;
+          text-align: center;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:wrap;
+          justify-content: center;
+        }
+        #set .info::-webkit-scrollbar {
+            display: none;
+        }
+        #set .info >div {
+          width:50%;
+          height:50%;
+          text-align: center;
+          font-size: 22px;
+        }
+        #set .info >div img {
+          width:25px;
+          height:25px;
+          position: relative;
+          top:4px;
+        }
+        #set .info >div .btn {
+          width:80%;
+          height:60%;
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+    <div id="app" v-cloak v-on:click="allclick">
+
+      <!-- 顶部 -->
+      <div class="top">
+          <div>
+              <!-- 个人信息 -->
+              <div class="t-left">
+                <div class="t-header" v-bind:style="header">
+                  <img src="../image/home_header_border.png" >
+                </div>
+                <div class="t-info">
+                  <p><img v-if="sex" src="../image/home_boy.png"><img v-else src="../image/home_girl.png"><span>{{username}}</span></p>
+                  <p>ID:&nbsp;<span>{{userid}}</span></p>
+                </div>
+                <div class="t-money" v-on:click="newpage('充值','recharge')"><img src="../image/home_money.png" class="money"><span>{{money}}</span><img src="../image/home_add.png" class="addmoney" ></div>
+              </div>
+              <!-- logo -->
+              <div class="t-logo"></div>
+              <!-- 按钮区 -->
+              <div class="t-right">
+                <div class="btn" v-on:click="newpage('邀请','invite')"><img src="../image/home_btnA.png" ><p>邀请码</p></div>
+                <div class="btn" v-on:click="newpage('战绩','history')"><img src="../image/home_btnB.png" ><p>战绩</p></div>
+                <div class="btn" v-on:click="newpage('消息','message')"><img src="../image/home_btnC.png" ><p>消息</p></div>
+                <div class="btn" v-on:click="newpage('分享','share')"><img src="../image/home_btnD.png"><p>分享</p></div>
+                <div class="btn"><img src="../image/home_btnE.png"  v-on:click="showmore"><p>更多</p></div>
+              </div>
+          </div>
+      </div>
+
+      <!-- 滚动公告 -->
+      <div class="tips">
+          <div class="tip"><p>乐山{{new_tip}}</p></div>
+          <img src="../image/home_laba.png">
+      </div>
+
+      <!-- 广告/房间 -->
+      <div class="main">
+        <div class="content">
+          <span v-if="is_news">{{news}}</span>
+          <div v-else class="rooms">
+            <div v-if="hasroom">
+              <div class="h-title">
+                <div>房号</div><div>局数</div><div>人数</div><div></div>
+              </div>
+              <div class="h-body"v-for="li in roomlists">
+                <div v-on:click="joinroom(li.roomid,li.roomcode)">{{li.roomcode}}</div><div v-on:click="joinroom(li.roomid,li.roomcode)">{{li.rounds}}</div><div v-on:click="joinroom(li.roomid,li.roomcode)">{{li.mans}}/4</div><div v-on:click="shareroom(li)"><img src="../image/invite.png"></div>
+              </div>
+            </div>
+            <p v-else>{{roomtip}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- 切换按钮 -->
+      <div class="adv" v-bind:style="advbg" v-on:click="checkadv"><span>最新资讯</span></div>
+      <div class="room" v-bind:style="roombg" v-on:click="checkroom"><span>房间列表</span></div>
+
+
+      <!-- 新建房间 -->
+      <div class="new" v-on:click="newpage('新建','newroom')"></div>
+      <!-- 加入房间 -->
+      <div class="old" v-on:click="newpage('加入','joinroom')"></div>
+
+      <!-- 更多选项 -->
+      <div class="more" v-if="show_more">
+        <div class="null"></div>
+        <div class="item" v-on:click="newpage('玩法','howplay')"><img src="../image/home_more1.png">玩法</div>
+        <div class="item" v-on:click="newpage('客服','service')"><img src="../image/home_more2.png">客服</div>
+        <div class="item" v-on:click="newpage('关于','aboutme')"><img src="../image/home_more3.png">关于</div>
+        <div class="item" v-on:click="set"><img src="../image/home_more4.png">设置</div>
+        <div class="item" v-on:click="newpage('退出','out')"><img src="../image/home_more5.png">退出</div>
+      </div>
+
+      <!-- 设置 -->
+      <div id="set">
+          <div class="main">
+              <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+              <div class="info">
+                <div >音效:&nbsp;&nbsp;<img src="../image/setting_on.png" v-if="voice==1" v-on:click="voiceswitch(1)"><img src="../image/setting_off.png" v-else v-on:click="voiceswitch(0)"></div>
+                <div >音乐:&nbsp;&nbsp;<img src="../image/setting_on.png" v-if="music==1" v-on:click="musicswitch(1)"><img src="../image/setting_off.png" v-else v-on:click="musicswitch(0)"></div>
+                <div ><img src="../image/setting_change.png" class="btn" v-on:click="chengeuser"></div>
+              </div>
+          </div>
+      </div>
+
+    </div>
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript" src="../script/home.js"></script>
+</html>

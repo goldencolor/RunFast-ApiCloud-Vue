@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>新建房间</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:70%;
+          height:80%;
+          background-image: url(../image/newroom_bg.png);
+          background-size: 100% 100%;
+          margin: 7% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:95%;
+          height:65%;
+          position: relative;
+          top:15%;
+          left:5%;
+          font-size: 12px;
+          color:#BD883A;
+
+        }
+
+        .info .left {
+          width:25%;
+          height:100%;
+          float:left;
+          display: flex;
+          flex-direction:  column;
+          flex-wrap:nowrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+        }
+        .info .left .item {
+          width:80%;
+          height:20%;
+          background-image: url(../image/newroom_selected.png);
+          background-size: 100% 100%;
+          margin-top:10px;
+          color:white;
+          text-align: center;
+          line-height:250%;
+        }
+        .info .left .itemed {
+          background-image: url(../image/newroom_unselect.png);
+        }
+        .info .right {
+          width:75%;
+          height:80%;
+          float:left;
+          overflow-y: scroll;
+        }
+        .info .right::-webkit-scrollbar {
+            display: none;
+        }
+        .info .right .choose1,.info .right .choose2,.info .right .choose3{
+          width:100%;
+          height: 40%;
+          border-bottom: 1px solid #C58562;
+          margin-bottom:5px;
+          padding-bottom:5px;
+        }
+        .info .right .choose2{
+          height:20%;
+        }
+        .choose_title {
+          width:25%;
+          height:100%;
+          float:left;
+          text-align: left;
+        }
+        .choose_title img {
+          width:40%;
+          height:25%;
+          position: relative;
+          top:25%;
+        }
+        .choose_title .s_title{
+          width:80%;
+          height:56%;
+        }
+        .choose_title .s_title2{
+          width:80%;
+          height:28%;
+        }
+        .choose_info {
+          width:75%;
+          height:100%;
+          float:left;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:wrap;
+          justify-content: flex-start;;
+          align-items: center;
+        }
+        .choose_info>div {
+          width: 39%;
+          margin-left: 5%;
+          font-size: 13px;
+        }
+        .choose_info>div img {
+          width:18px;
+          height:18px;
+          position: relative;
+          top:3px;
+        }
+        .null {
+          width:100%;
+          height:30%;
+        }
+        .sure {
+          width:60%;
+          height:15%;
+          position: absolute;
+          bottom:13%;
+          left:30%;
+          text-align: center;
+          font-size: 12px;
+          color:#C98866;
+        }
+        .sure img {
+          width:26%;
+          height:65%;
+          position: relative;
+          top:20%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="info">
+                <div class="left">
+                  <div class="item" v-if='item1'>乐山玩法</div><div class="item itemed" v-else v-on:click="selected(1)">乐山玩法</div>
+                  <!-- <div class="item" v-if='item2'>霸王庄</div><div class="item itemed" v-else v-on:click="selected(2)">霸王庄</div>
+                  <div class="item" v-if='item3'>瞎子玩法</div><div class="item itemed" v-else v-on:click="selected(3)">瞎子玩法</div> -->
+                </div>
+                <div class="right">
+                  <div class="choose1">
+                    <div class="choose_title"><img src="../image/newroom_jushu.png"></div>
+                    <div class="choose_info">
+                      <div v-on:click="choosejushu(1)"><img src="../image/newroom_chooseed.png" v-if="jushu.choose1"><img src="../image/newroom_unchoose.png" v-else>&nbsp;10局&nbsp;(<img src="../image/recharge_stone1.png">3)</div>
+                      <div v-on:click="choosejushu(2)"><img src="../image/newroom_chooseed.png" v-if="jushu.choose2"><img src="../image/newroom_unchoose.png" v-else>&nbsp;20局&nbsp;(<img src="../image/recharge_stone1.png">6)</div>
+                      <div v-on:click="choosejushu(3)"><img src="../image/newroom_chooseed.png" v-if="jushu.choose3"><img src="../image/newroom_unchoose.png" v-else>&nbsp;30局&nbsp;(<img src="../image/recharge_stone1.png">9)</div>
+                    </div>
+                  </div>
+                  <div class="choose2">
+                    <div class="choose_title"><img src="../image/newroom_zhadan.png" class="s_title"></div>
+                    <div class="choose_info">
+                      <div v-on:click="choosezhadan(1)"><img src="../image/newroom_chooseed.png" v-if="zhadan.choose1"><img src="../image/newroom_unchoose.png" v-else>&nbsp;&nbsp;是</div>
+                      <div v-on:click="choosezhadan(2)"><img src="../image/newroom_chooseed.png" v-if="zhadan.choose2"><img src="../image/newroom_unchoose.png" v-else>&nbsp;&nbsp;否</div>
+                    </div>
+                  </div>
+                  <div class="choose3" >
+                    <div class="choose_title"><img src="../image/newroom_leixing.png" class="s_title2"></div>
+                    <div class="choose_info">
+                      <div v-on:click="chooseleixing(1)"><img src="../image/newroom_chooseed.png" v-if="leixing.choose1"><img src="../image/newroom_unchoose.png" v-else>&nbsp;&nbsp;黑桃5上庄</div>
+                      <div v-on:click="chooseleixing(2)"><img src="../image/newroom_chooseed.png" v-if="leixing.choose2"><img src="../image/newroom_unchoose.png" v-else>&nbsp;&nbsp;霸王庄</div>
+                      <div v-on:click="chooseleixing(3)"><img src="../image/newroom_chooseed.png" v-if="leixing.choose3"><img src="../image/newroom_unchoose.png" v-else>&nbsp;&nbsp;压牌随机庄</div>
+                      <div v-on:click="chooseleixing(4)"><img src="../image/newroom_chooseed.png" v-if="leixing.choose4"><img src="../image/newroom_unchoose.png" v-else>&nbsp;&nbsp;压牌霸王庄</div>
+                    </div>
+                  </div>
+                  <div class="choose4">
+                    <div class="choose_title"><img src="../image/newroom_leixing.png" class="s_title"></div>
+                    <div class="choose_info">
+                      <div v-on:click="choosepoker(1)"><img src="../image/newroom_chooseed.png" v-if="poker.choose1"><img src="../image/newroom_unchoose.png" v-else>&nbsp;&nbsp;显示牌数</div>
+                      <div v-on:click="choosepoker(2)"><img src="../image/newroom_chooseed.png" v-if="poker.choose2"><img src="../image/newroom_unchoose.png" v-else>&nbsp;&nbsp;不显示牌数</div>
+                    </div>
+                  </div>
+                  <div class="null"></div>
+                </div>
+            </div>
+            <div class="sure">
+                <img src="../image/newroom_sure.png" v-on:click="gogame"><span>备注:游戏开始前不扣除钻石</span>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+    var app = new Vue({
+      el:"#app",
+      data:{
+        item1:true,
+        item2:false,
+        item3:false,
+        jushu:{
+          choose1:true,
+          choose2:false,
+          choose3:false,
+        },
+        zhadan:{
+          choose1:true,
+          choose2:false
+        },
+        leixing:{
+          choose1:true,
+          choose2:false,
+          choose3:false,
+          choose4:false
+        },
+        poker:{
+          choose1:true,
+          choose2:false
+        }
+      },
+      methods:{
+        //全局点击
+        allclick:function(){
+          music_nomal();
+        },
+        closeme:function(){
+          api.closeFrame({
+              name: '新建'
+          });
+        },
+        //选择大选项
+        selected:function(e){
+          switch(e){
+            case 1:
+                app.item1 = true;
+                app.item2 = false;app.item3 = false;
+                break;
+            case 2:
+                app.item2 = true;
+                app.item1 = false;app.item3 = false;
+                break;
+            case 3:
+                app.item3 = true;
+                app.item2 = false;app.item1 = false;
+                break;
+          }
+        },
+        //局数选择
+        choosejushu:function(e){
+          switch(e){
+            case 1:
+                app.jushu.choose1 = true;
+                app.jushu.choose2 = false;app.jushu.choose3 = false;
+                break;
+            case 2:
+              app.jushu.choose2 = true;
+              app.jushu.choose1 = false;app.jushu.choose3 = false;
+                break;
+            case 3:
+              app.jushu.choose3 = true;
+              app.jushu.choose2 = false;app.jushu.choose1 = false;
+                break;
+          }
+        },
+        //炸弹选择
+        choosezhadan:function(e){
+          switch(e){
+            case 1:
+                app.zhadan.choose1 = true;
+                app.zhadan.choose2 = false;
+                break;
+            case 2:
+                app.zhadan.choose2 = true;
+                app.zhadan.choose1 = false;
+                break;
+          }
+        },
+        //类型选择
+        chooseleixing:function(e){
+          switch(e){
+            case 1:
+                app.leixing.choose1 = true;
+                app.leixing.choose2 = false;
+                app.leixing.choose3 = false;
+                app.leixing.choose4 = false;
+                break;
+            case 2:
+                app.leixing.choose2 = true;
+                app.leixing.choose1 = false;
+                app.leixing.choose3 = false;
+                app.leixing.choose4 = false;
+                break;
+            case 3:
+                app.leixing.choose3 = true;
+                app.leixing.choose1 = false;
+                app.leixing.choose2 = false;
+                app.leixing.choose4 = false;
+                break;
+            case 4:
+                app.leixing.choose4 = true;
+                app.leixing.choose1 = false;
+                app.leixing.choose2 = false;
+                app.leixing.choose3 = false;
+                break;
+          }
+        },
+        //显示牌选择
+        choosepoker:function(e){
+          switch(e){
+            case 1:
+                app.poker.choose1 = true;
+                app.poker.choose2 = false;
+                break;
+            case 2:
+                app.poker.choose2 = true;
+                app.poker.choose1 = false;
+                break;
+          }
+        },
+        //进入游戏
+        gogame:function(){
+          var that = this;
+          var room_type,is_double,round_id,gametype,gamechoice,isboom,rounds,poker;
+          if(this.leixing.choose1 == true){
+            room_type = 0;
+            gametype = 1;
+          }else if (this.leixing.choose2 == true){
+            room_type = 1;
+            gametype = 2;
+          }else if (this.leixing.choose3 == true){
+            room_type = 2;
+            gamechoice = 1;
+            gametype = 3;
+          }else if (this.leixing.choose4 == true){
+            room_type = 3;
+            gamechoice = 2;
+            gametype = 3;
+          }
+          poker = this.poker.choose1?1:0;
+          is_double = this.zhadan.choose1?1:0;
+          isboom = this.zhadan.choose1?true:false;
+          if(this.jushu.choose1 == true){
+            round_id = 1;
+          }else if(this.jushu.choose2 == true){
+            round_id = 2;
+          }
+          else if(this.jushu.choose3 == true){
+            round_id = 3;
+          }
+          switch(round_id){
+            case 1:
+              rounds = 10;
+              break;
+            case 2:
+              rounds = 20;
+              break;
+            case 3:
+              rounds = 30;
+              break;
+          }
+          //进度框
+          var t = setTimeout(function(){
+            api.showProgress({
+                title: '创建中',
+                modal: true,
+                animationType: 'zoom',
+            });
+          },1000)
+
+          setTimeout(function(){
+            api.hideProgress();
+          },5000)
+          $api.post(o_url + 'add_room_think',{
+            values:{
+              cid:$api.getStorage("token"),
+              room_type:room_type,
+              is_double:is_double,
+              round_id:round_id,
+              showpoker:poker
+            }
+          },function(ret){
+            clearTimeout(t)
+            api.hideProgress();
+            if(ret.error == 0){
+              var owner;
+              owner = ret.msg.start_btn;
+              //执行脚本
+              api.execScript({
+                  script: jsfun
+              });
+              api.openWin({
+                  name: '游戏',
+                  url: '../html/game.html',
+                  slidBackEnabled:false,
+                  animation: {
+                    type:winChange,
+                    duration:500
+                  },
+                  pageParam:{
+                    roomid:ret.msg.room_id,
+                    roomcode:ret.msg.room_code,
+                    gametype:gametype,
+                    isboom:isboom,
+                    gamechoice:gamechoice,
+                    rounds:rounds,
+                    showpoker:poker,
+                    owner:owner
+                  },
+                  delay:100,
+                  reload:true
+              });
+
+              setTimeout(function(){
+                app.closeme();
+                api.closeWin({
+                    name: '主页'
+                });
+              },2000);
+            }else {
+              api.toast({msg:ret.msg,location:'middle'});
+            }
+          },'json');
+        }
+      }
+    })
+
+    //在当前window中执行jsfun脚本  关闭音乐
+    var jsfun = 'closemusic();';
+
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+  }
+
+</script>
+</html>

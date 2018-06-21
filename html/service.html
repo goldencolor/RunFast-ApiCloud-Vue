@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>玩法</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:70%;
+          height:80%;
+          background-image: url(../image/service_bg.png);
+          background-size: 100% 100%;
+          margin: 7% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:50%;
+          height:60%;
+          position: relative;
+          top:25%;
+          left:25%;
+          overflow-y: scroll;
+          font-size: 12px;
+          color:#BD883A;
+          text-align: center;
+        }
+        .info::-webkit-scrollbar {
+            display: none;
+        }
+        .info p {
+          font-size: 13px;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+        .info table{
+          width:100%;
+          height:70%;
+          border:1px solid #BF8933;
+          box-sizing: border-box;
+          border-collapse:collapse;
+        }
+        .info table tr td{
+          width:50%;
+          box-sizing: border-box;
+          border:1px solid #BF8933;
+        }
+        .info span {
+          color:#D3AA71;
+          margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="info">
+              <p>如您有任何疑问, 请联系我们</p>
+              <table>
+                <tr><td>客服电话</td><td>{{phone}}</td></tr>
+                <tr><td>合作QQ群</td><td>{{group}}</td></tr>
+                <tr><td>微信公众号</td><td>{{wx}}</td></tr>
+                <tr><td>客服QQ</td><td>{{qq}}</td></tr>
+              </table>
+              <span>感谢您对游戏的支持与理解!</span>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+    var app = new Vue({
+      el:"#app",
+      data:{
+        phone:"",
+        group:"",
+        wx:"",
+        qq:""
+      },
+      methods:{
+        closeme:function(){
+          api.closeFrame({
+              name: '客服'
+          });
+        }
+      }
+    })
+    $api.get(o_url + 'connect',{
+      values:{
+        //cid:$api.getStorage("token"),
+      }
+    },function(ret){
+        app.phone = ret.msg.tel;
+        app.group = ret.msg.qq;
+        app.wx =  ret.msg.weixin_public;
+        app.qq = ret.msg.kefu_qq;
+    },'json');
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+  }
+
+</script>
+</html>

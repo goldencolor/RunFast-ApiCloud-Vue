@@ -1,0 +1,1251 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>游戏</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/animate.min.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../css/game.css" /> -->
+    <style>
+    *{
+      padding:0;
+      margin:0;
+    }
+    html,body,#app{
+      width:100%;
+      height:100%;
+      overflow: hidden;
+    }
+    #app{
+      background-size: 100% 100%;
+    }
+    [v-cloak]{
+      display:none;
+    }
+    #jq22{
+        animate-duration: 1.5s;    //动画持续时间
+        animate-delay: 0s;    //动画延迟时间
+        animate-iteration-count: 1;    //动画执行次数
+    }
+    /* ------------------------------------- 游戏详情提示点 --------------- */
+    .game-tip {
+      position: absolute;
+      width:30px;
+      height:30px;
+      left:3%;
+      top:13%;
+    }
+    /* -------------------------------------- 游戏设置区域 --------------- */
+    .game-set {
+      position: absolute;
+      width:30px;
+      height:30px;
+      right:3%;
+      top:13%;
+      transform: rotate(180deg);
+      transition: 500ms;
+      z-index: 999;
+    }
+    .setting {
+      width: 100px;
+      height: 100%;
+      position: fixed;
+      right:-100px;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 99;
+      transition: 500ms;
+      display: flex;
+      flex-direction:  column;
+      flex-wrap:nowrap;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .setting div {
+      width:100%;
+      height:20%;
+      text-align: center;
+      font-size: 16px;
+      color:#FCEAB7;
+      line-height: 300%;
+    }
+    .setting div img {
+      width: 25px;
+      height:25px;
+      position: relative;
+      top:5px;
+    }
+    .records {
+      width:23%;
+      padding-left:5px;
+      height:100%;
+      position: fixed;
+      right:-100%;
+      bottom:0%;
+      background-color: rgba(0,0,0,0.5);
+      transition: 500ms;
+      z-index: 999999;
+      overflow: scroll;
+    }
+    .records > div {
+      float: left;
+      width:100%;
+      height:30px;
+      margin-top: 3px;
+      line-height: 30px;
+      text-align: center;
+      background-image: url(../image/game/game_voices_bg.png);
+      background-size: 100% 100%;
+      font-size: 12px;
+      padding-left:5px;
+      padding-right: 5px;
+      overflow: hidden; /*自动隐藏文字*/
+      text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+      white-space: nowrap;/*强制不换行*/
+      color:#FCCDA1;
+    }
+    /* -------------------------------------- 等待加入提示条 --------------- */
+    .wait {
+      width:40%;
+      position: absolute;
+      top:65%;
+      left:30%;
+      height:20px;
+      background-image: url(../image/home_tips_bg.png);
+      background-size: 100% 100%;
+      line-height: 19px;
+      text-align: center;
+      color:#FDE56F;
+      font-size: 14px;
+    }
+    /* -------------------------------------- 等待游戏操作区域 --------------- */
+    .game-control {
+      width:60%;
+      height:15%;
+      position: absolute;
+      bottom:10%;
+      left:20%;
+      display: flex;
+      flex-direction:row;
+      flex-wrap:nowrap;
+      justify-content: space-around;
+      align-items: flex-end;
+    }
+    .game-control div{
+      width:25%;
+      height:80%;
+      text-align: center;
+    }
+    .game-control div img {
+      width:100%;
+      height:100%;
+    }
+    .game-control div span {
+      position: relative;
+      top:-85%;
+      font-weight: bolder;
+      color:#F8FCF7;
+    }
+    /* -------------------------------------- 录音按钮 --------------- */
+    .record {
+      width:30px;
+      height:30px;
+      position: absolute;
+      right:12%;
+      bottom:4%;
+      z-index: 99999;
+    }
+    .record2{
+      width:30px;
+      height:30px;
+      position: absolute;
+      right:4%;
+      bottom:4%;
+      z-index: 99999;
+    }
+
+    .recording {
+      width:80px;
+      height:80px;
+      border-radius: 40px;
+      overflow: hidden;
+      position: absolute;
+      top:calc(50% - 40px);
+      left:calc(50% - 40px);
+    }
+    .recording img {
+      width:100%;
+      height:100%;
+      position: relative;
+      z-index: 999;
+    }
+    .recording div{
+      width:100%;
+      height:100%;
+      background-color: black;
+      float:left;
+      z-index: 99;
+      border-radius: 50%;
+
+    }
+    .recording .bg{
+        animation: up 3s linear infinite;
+    }
+    @keyframes up
+    {
+        0%   {margin-top:-5%;}
+        100% {margin-top:-100%;}
+    }
+    /* -------------------------------------- 玩家等待 --------------- */
+    .p-wait {
+      width:50%;
+      height:25%;
+      position: absolute;
+      top:5%;
+      left:25%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap:nowrap;
+      justify-content: flex-start;
+    }
+    .p-wait > div {
+      width:20%;
+      height:100%;
+      margin-right:3%;
+      text-align: center;
+    }
+    .p-wait > div .p-header {
+      width:80%;
+      height:50%;
+      background-image: url(../image/game/game_p_bg.png);
+      background-size: 100% 100%;
+      margin:0 auto;
+    }
+    .p-wait > div .p-header img {
+      width:92%;
+      height:90%;
+      position: relative;
+      top:5%;
+      left:0%;
+      border-radius: 5%;
+    }
+    .p-wait > div p{
+      font-size: 10px;
+      color:#FBFDFB;
+      overflow: hidden; /*自动隐藏文字*/
+      text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+      white-space: nowrap;/*强制不换行*/
+    }
+    .p-wait > div img {
+      width:80%;
+      height:22%;
+    }
+
+    /* -------------------------------------- 游戏设置 --------------- */
+
+
+    .gameset{
+      width:100%;
+      height:100%;
+      overflow: hidden;
+      background-color: rgba(0,0,0,0.5);
+      position: fixed;
+      top:0;
+      z-index: 99999;
+    }
+    .gameset .main {
+      width:50%;
+      height:60%;
+      background-image: url(../image/setting_bg.png);
+      background-size: 100% 100%;
+      position: relative;
+      top:20%;
+      left:25%;
+    }
+    .gameset .close {
+      width:30px;
+      height:30px;
+      float:right;
+      position: relative;
+      left:10px;
+      top:-10px;
+    }
+    .gameset .info {
+      width:80%;
+      height:60%;
+      position: relative;
+      top:25%;
+      left:10%;
+      overflow-y: scroll;
+      font-size: 12px;
+      color:#BD883A;
+      text-align: center;
+      display: flex;
+      flex-direction: row;
+      flex-wrap:wrap;
+      justify-content: center;
+    }
+    .gameset .info::-webkit-scrollbar {
+        display: none;
+    }
+    .gameset .info >div {
+      width:50%;
+      height:50%;
+      text-align: center;
+      font-size: 20px;
+    }
+    .gameset .info >div img {
+      width:25px;
+      height:25px;
+      position: relative;
+      top:4px;
+    }
+    .gameset .info >div .btn {
+      width:80%;
+      height:60%;
+    }
+    /* -------------------------------------- 房间详情 --------------- */
+
+    .room_info {
+      width:20%;
+      position: absolute;
+      top:0;
+      left:0;
+      z-index: 9999;
+      color:white;
+      font-size: 10px;
+    }
+
+
+    /* -------------------------------------- 打牌啦打牌啦 --------------- */
+    #down #firstpoker ,#out #firstpoker{
+      width:20px;
+      height:20px;
+      position: relative;
+      z-index: 9999;
+      top:-40%;
+    }
+    #down {
+      width:40%;
+      height:30%;
+      position: absolute;
+      bottom:0;
+      left:30%;
+    }
+    #down .poker {
+      width:100%;
+      height:60%;
+    }
+    #down .poker > div {
+      width:18%;
+      height:100%;
+      float: left;
+      margin-left:-9%;
+    }
+    #down .poker > div img {
+      width:100%;
+      height:100%;
+      position: relative;
+    }
+    #down .info {
+      width:60%;
+      height:40%;
+      margin:0 auto;
+    }
+    #down .info>div {
+      float:right;
+      height:100%;
+      width:65%;
+      display: flex;
+      flex-direction: column;
+      flex-wrap:nowrap;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    #down .info>div div {
+      width:80%;
+      height:33%;
+      text-align: left;
+      font-size: 10px;
+      color:white;
+      overflow: hidden; /*自动隐藏文字*/
+      text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+      white-space: nowrap;/*强制不换行*/
+    }
+    #down .info>img {
+      float:right;
+      width:32%;
+      height:100%;
+      border-radius: 20%;
+    }
+    #down .info .herder-border{
+      position: relative;
+      float:left;
+      left:3%;
+      top:-100%;
+    }
+    #right {
+      width:15%;
+      height:50%;
+      position: absolute;
+      right:0;
+      top:25%;
+    }
+    #right .poker {
+      width:40%;
+      height:100%;
+      float:left;
+    }
+    #right .poker div {
+      width:90%;
+      height:27%;
+      margin-bottom:-90%;
+    }
+    #right .poker div img{
+      width:100%;
+      height:100%;
+    }
+    #right .info{
+      width:60%;
+      height:100%;
+      float:left;
+      text-align: center;
+    }
+    #right .info img {
+      width:80%;
+      height:23%;
+      border-radius: 15%;
+      margin-bottom:10%;
+    }
+    #right .info .herder-border {
+      margin-bottom:-86%;
+      width:84%;
+      height:25%;
+      position: relative;
+      left:3%;
+      top:-2px;
+      z-index: 999
+    }
+    #right .info p {
+      font-size: 10px;
+      color:white;
+      overflow: hidden; /*自动隐藏文字*/
+      text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+      white-space: nowrap;/*强制不换行*/
+      width:100%;
+    }
+    #up {
+      width:34%;
+      height:26%;
+      position: absolute;
+      top:0;
+      left:33%;
+    }
+    #up .info {
+      width:60%;
+      margin:0 auto;
+      height:45%;
+    }
+    #up .info>div {
+      float:right;
+      width:60%;
+      height:100%;
+      padding-left: 5%;
+    }
+    #up .info>div p {
+      text-align: left;
+      font-size: 10px;
+      color:white;
+      overflow: hidden; /*自动隐藏文字*/
+      text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+      white-space: nowrap;/*强制不换行*/
+      width:100%;
+    }
+    #up .info img {
+      width:32%;
+      height:90%;
+      border-radius: 15%;
+    }
+    #up .info .herder-border{
+      position: relative;
+      top:-100%;
+      width:34%;
+      height: 94%;
+    }
+    #up .poker {
+      width:100%;
+      height:55%;
+      margin-left:6%;
+    }
+    #up .poker>div {
+      float: left;
+      width:16%;
+      height:100%;
+      margin-right:-8%;
+    }
+    #up .poker>div img {
+      width: 100%;
+      height:100%;
+    }
+    #left {
+      width:15%;
+      height:50%;
+      position: absolute;
+      left:0;
+      top:25%;
+    }
+    #left .poker {
+      width:40%;
+      height:100%;
+      float:right;
+    }
+    #left .poker div {
+      width:90%;
+      height:27%;
+      margin-bottom:-90%;
+    }
+    #left .poker div img{
+      width:100%;
+      height:100%;
+    }
+    #left .info{
+      width:60%;
+      height:100%;
+      float:right;
+      text-align: center;
+    }
+    #left .info img {
+      width:78%;
+      height:23%;
+      border-radius: 15%;
+      margin-bottom:10%;
+    }
+    #left .info .herder-border {
+      margin-bottom:-86%;
+      width:84%;
+      height:25%;
+      position: relative;
+      left:3%;
+      top:-2px;
+      z-index: 999
+    }
+    #left .info p {
+      font-size: 10px;
+      color:white;
+      overflow: hidden; /*自动隐藏文字*/
+      text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+      white-space: nowrap;/*强制不换行*/
+      width:100%;
+    }
+
+    /* ------------------------------------------------------------ 出牌出牌 ------------- */
+
+    .downout {
+      bottom:35%;
+      left:40%;
+    }
+    .upout {
+      top:30%;
+      left:40%;
+    }
+    .rightout {
+      top:40%;
+      right:20%;
+    }
+    .leftout {
+      top:40%;
+      left:20%;
+    }
+    #out {
+      position: absolute;
+      height:50px;
+    }
+    #out div {
+      width:36px;
+      height:50px;
+      float:left;
+      margin-right:-18px;
+    }
+    #out div img {
+      width:100%;
+      height:100%;
+    }
+
+    /* ---------------------------------------------------动画提示--------------  */
+
+    #animate {
+      width:40%;
+      height:45%;
+      top:20%;
+      left:35%;
+      position: absolute;
+      z-index: 99999;
+      display:none
+    }
+    #animate img{
+      width:100%;
+      height:100%;
+    }
+    #passanimate {
+      /*width:10%;
+      height:15%;
+      position: absolute;
+      z-index: 99999;
+      display:none;*/
+    }
+    #passanimate img {
+      width:100%;
+      height:100%;
+    }
+    .passleft {
+      top:30%;
+      left:15%
+    }
+    .passtop {
+      top:20%;
+      left:45%
+    }
+    .passright {
+      top:30%;
+      right:15%
+    }
+    .passbottom {
+      bottom:20%;
+      left:45%
+    }
+
+
+    /* ------------------------------------------------ 出牌提示 ----------- */
+    .outtip {
+      width:25px;
+      height:26px;
+    }
+    .upouttip {
+      top:1%;
+      position: absolute;
+      left:58%;
+      transform: rotate(0deg);
+      animation: lr 1s linear infinite;
+    }
+    .downouttip {
+      bottom:1%;
+      position: absolute;
+      left:58%;
+      transform: rotate(0deg);
+      animation: lr 1s linear infinite;
+    }
+    @keyframes lr
+    {
+        0%   {transform: rotate(30deg);}
+        25%  {transform: rotate(15deg);}
+        50%  {transform: rotate(0deg);}
+        100% {transform: rotate(30deg);}
+    }
+    .leftouttip {
+      top:60%;
+      position: absolute;
+      left:2%;
+      animation: ud 1s linear infinite;
+    }
+    .rightouttip {
+      top:60%;
+      position: absolute;
+      right:2%;
+      animation: ud 1s linear infinite;
+    }
+    @keyframes ud
+    {
+      0%   {transform: rotate(30deg);}
+      25%  {transform: rotate(15deg);}
+      50%  {transform: rotate(0deg);}
+      100% {transform: rotate(30deg);}
+    }
+    .null {
+      display:none;
+    }
+    .outbtn , .outtiper {
+      width:12%;
+      height:10%;
+      position: absolute;
+      bottom: 37%;
+      right:30%;
+      text-align: center;
+      color:white;
+      font-size: 15px;
+      font-weight: bolder;
+      line-height: 200%;
+    }
+    .outbtn div, .outtiper div{
+      width:100%;
+      height:100%;
+      background-image: url(../image/game/game_invite.png);
+      background-size: 100% 100%;
+    }
+    .outtiper {
+      right:63%;
+    }
+    .outtiper div{
+      background-image: url(../image/game/game_starton.png);
+    }
+    /* ----------------------------------------------- 结束画面 ----------- */
+    #end {
+      width:100%;
+      height:100%;
+      background-color: rgba(0,0,0,0.4);
+      z-index: 999999;
+      position: fixed;
+      top:0;
+      left:0;
+    }
+    #end .main {
+      width:80%;
+      height:50%;
+      position: relative;
+      top:30%;
+      left:10%;
+      background-image: url(../image/game/gameend_bg.png);
+      background-size: 100% 100%;
+    }
+    #end .main img {
+      width:24%;
+      height:15%;
+      position: relative;
+      top:-6%;
+      left:38%;
+    }
+    #end .main .title {
+      height:15%;
+      width:66%;
+      top:3%;
+      left:17%;
+      position: relative;
+    }
+    #end .main .title>div {
+      width:50%;
+      height:100%;
+      float:left;
+      line-height:200%;
+      text-align: center;
+      font-size: 18px;
+      color:#FFFEFF;
+    }
+    #end .main .info {
+      width:60%;
+      height:45%;
+      position: relative;
+      left:20%;
+      top:8%;
+    }
+    #end .main .info table {
+      width:100%;
+      height:100%;
+    }
+    #end .main .info table td,#end .main .info table th {
+      width:33%;
+      height:25%;
+      color:#FBFCFC;
+      text-align: center;
+      overflow: hidden; /*自动隐藏文字*/
+      text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+      white-space: nowrap;/*强制不换行*/
+
+    }
+    #end .main .info .zheng {
+      color:#2BFF01
+    }
+    #end .main .info .fu {
+      color:#FF0101;
+    }
+    #end .main p {
+      top:14%;
+      position: relative;
+      height:30px;
+      width:20%;
+      margin:0 auto;
+      background-image: url(../image/game/game_end_btn.png);
+      background-size: 100% 100%;
+    }
+    #end .main p img {
+      width:50%;
+      height:60%;
+      position: relative;
+      top:15%;
+      left:25%
+    }
+
+    /* ---------------------------------------------------------------- 压牌 --------- */
+    .backpoker {
+      position: absolute;
+      width: 13%;
+      height:12%;
+      top: 5%;
+      left:12%;
+      z-index: 999
+    }
+    .backpoker div {
+      width:40%;
+      height:100%;
+      float:left;
+      margin-left:-20%;
+    }
+    .backpoker div img {
+      width:100%;
+      height:100%;
+    }
+
+    /* -------------------------------------------------------------- 结算界面准备区域 ------ */
+    .endready {
+      width:13%;
+      height:25%;
+      position: absolute;
+      z-index: 999999;
+      left:0;
+      bottom:30%;
+    }
+    .endready #outroom {
+      color:white;
+      font-size: 12px;
+      line-height: 22px;
+      text-align: center;
+      width:81px;
+      height:22px;
+      background-image: url(../image/game/game_end_btn.png);
+      background-size: 100% 100%;
+    }
+    .endready>div {
+      width:100%;
+      height:100%;
+      overflow: hidden;
+    }
+    .endready>div .item,.endready>div .itemed{
+      width:100%;
+      height:23%;
+      margin-top:2%;
+      background-image: url(../image/game/game_end_on.png);
+      background-size: 100% 100%;
+      text-align: left;
+      font-size: 10px;
+      color:white;
+      line-height: 200%;
+      padding-left:5px;
+    }
+    .endready>div .itemed{
+      background-image: url(../image/game/game_end_off.png);
+    }
+    .endready>div .itemed span,.endready>div .item span{
+      width:10px;
+      height:10px;
+      display: inline-block;
+      border-radius: 5px;
+      background-color: green;
+      position: relative;
+      float: right;
+      top:5px;
+      right:5px;
+    }
+    .endready>div .item span{
+      background-color: red;
+    }
+
+
+    /* ---------------------------------------------- 最终局样式 ------------ */
+    .isoverclass {
+      background-image: url(../image/game/gameend_over.png);
+      background-size: 100% 100%;
+    }
+
+    /* --------------------------------------------- 同意解散房间 ----------- */
+    #clear {
+      width:100%;
+      height:100%;
+      background-color: rgba(0,0,0,0.4);
+      position: fixed;
+      z-index: 99999;
+      top:0;
+      left:0;
+      display: none;
+    }
+    #clear2 {
+      width:80%;
+      height:80%;
+      background-image: url(../image/game/game_winbg.png);
+      background-size: 100% 100%;
+      position: absolute;
+      z-index: 99999;
+      top:10%;
+      left:10%;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    #clear2>p {
+      text-align: center;
+      position: relative;
+      top:15%;
+    }
+    #clear2 .info ,#clear2 .btn {
+      width:80%;
+      height:40%;
+      position: relative;
+      top:20%;
+      left:10%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap:nowrap;
+      justify-content: space-around;
+      align-items: flex-start;
+    }
+    #clear2 .info>div {
+      width:15%;
+      height:100%;
+      text-align: center;
+    }
+    #clear2 .info>div p {
+      overflow: hidden; /*自动隐藏文字*/
+      text-overflow: ellipsis;/*文字隐藏后添加省略号*/
+      white-space: nowrap;/*强制不换行*/
+      color:#AB711F;
+      font-size: 12px;
+    }
+    #clear2 .info>div img {
+      width:65%;
+      height:30%;
+      border:2px solid #AB711F;
+      border-radius: 10px;
+    }
+    #clear2 .btn>div {
+      width:35%;
+      height:40%;
+      border-radius: 10px;
+      font-size: 20px;
+      color:white;
+      line-height: 200%;
+      text-align: center;
+    }
+    #clear2 .btn #clear-left {
+      background-color: #FF8C00;
+    }
+    #clear2 .btn #clear-right {
+      background-color: #32CD32;
+    }
+    #clear2 .status {
+      width:100%;
+      height:2%;
+      background-color: green;
+      position: absolute;
+      bottom:1px;
+      animation: timedown 31s linear;
+    }
+    @keyframes timedown
+    {
+        0%   {width: 100%;}
+        100% {width: 0%;}
+    }
+    .silidertip {
+      position: fixed;
+      z-index: 9999;
+      height:17%;
+      width:0px;
+      bottom:13%;
+      left:30%;
+      background-color: rgba(0,0,0,0.3);
+      display:none;
+    }
+    #talking {
+      width:6%;
+      height:9%;
+      position: absolute;
+      z-index: 9999;
+      animation: talk 1s linear infinite;
+      display:none;
+    }
+    @keyframes talk
+{
+    0%   {transform: scaleX(0.9);}
+    50% {transform: scaleX(1);}
+    100% {transform: scaleX(0.9);}
+}
+    .uptalking{
+      left:54%;
+      top:1%;
+    }
+    .downtalking {
+      left:56%;
+      bottom:1%;
+    }
+    .lefttalking {
+      left:2%;
+      top:54%;
+    }
+    .righttalking {
+      right:2%;
+      top:54%;
+    }
+    .startgame {
+      width:15%;
+      height:12%;
+      position: absolute;
+      top:50%;
+      left:42%;
+      text-align: center;
+    }
+    .startgame img {
+      width:100%;
+      height:100%
+    }
+    .startgame span {
+      color:#F8FCF7;
+      position: relative;
+      top:-85%;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .startgame .black{
+      color:#A3A3A3;
+    }
+    .watchgame {
+      width:60px;
+      height:48px;
+      position: absolute;
+      left:calc(50% - 30px);
+      bottom:15%;
+      display:none;
+    }
+    .offline {
+      background-color: rgba(0,0,0,0.8)
+    }
+    </style>
+
+</head>
+<body>
+  <div id="app" v-cloak v-bind:style="adbg" v-on:click="allclick" >
+    <!-- 掉线提示器 -->
+    <div class="offlinetop offline"></div>
+    <!-- 观战图片 -->
+    <img src="../image/game/game_watch.png" class="watchgame">
+    <!-- 开始按钮 -->
+    <div class="startgame">
+      <img src="../image/game/game_startoff.png" v-if="canstart == 1"><img src="../image/game/game_starton.png" v-if="canstart == 2">
+      <span class="black" v-if="canstart == 1">开始游戏</span><span class="white" v-if="canstart == 2" v-on:click="ownerstartgame">开始游戏</span>
+    </div>
+    <!-- 说话提示符号 -->
+    <img src="../image/game/talking.svg" id="talking" class="downtalking">
+    <!-- 滑动选牌提示 -->
+    <div class="silidertip"></div>
+
+    <!-- 游戏详情按钮 -->
+    <img src="../image/game/game_tip.png" class="game-tip" v-on:click="showGameTip"><!--  v-if="start==false" -->
+    <!-- 设置按钮 -->
+    <img src="../image/game/game_set.png" class="game-set" v-on:click="showSetting">
+    <!-- 设置区域 -->
+    <div class="setting" v-on:click="closeSetting">
+      <div v-on:click="outgame"><img src="../image/game/game_set1.png">&nbsp;&nbsp;解散</div>
+      <div v-on:click="outroom"><img src="../image/game/game_set2.png">&nbsp;&nbsp;离开</div>
+      <div v-on:click="showgameset"><img src="../image/game/game_set3.png">&nbsp;&nbsp;设置</div>
+    </div>
+    <!-- 等待加入提示 -->
+    <div class="wait" v-if="start==false">{{ready.tip}}</div>
+    <!-- 开始游戏/准备/邀请好友 -->
+    <div class="game-control" v-if="start==false">
+      <!-- <div><img src="../image/game/game_starton.png" v-if="ready.isstart"><img src="../image/game/game_startoff.png" v-else><span v-bind:style="{color:ready.isstart?'#F8FCF7':'#7D7A75'}">开始游戏</span></div> -->
+      <div v-on:click="readygame"><img src="../image/game/game_readyoff.png" v-if="ready.isready" ><img src="../image/game/game_readyon.png" v-else ><span v-bind:style="{color:ready.isready?'#7D7A75':'#F8FCF7'}">坐&nbsp;&nbsp;&nbsp;&nbsp;下</span></div>
+      <div v-on:click="shareroom"><img src="../image/game/game_invite.png"><span>邀请好友</span></div>
+    </div>
+    <!-- 录音按钮 -->
+    <img src="../image/game/game_record.png" class="record" v-on:touchstart="recording" v-on:touchend="stoprecord" v-if="start">
+    <!-- 录音指示 -->
+    <div class="recording" v-if="isrecord"><img src="../image/game/game_recording.png" ><div id="recordbg"></div></div>
+    <!-- 语音消息按钮 -->
+    <img src="../image/game/game_voices.png" class="record2" v-on:click="showvoices" v-if="start">
+    <div class="records">
+      <div v-on:click="playvoice(1)">哎,挤哈点喂,老年协会了喔!</div>
+      <div v-on:click="playvoice(2)">今天手气不摆了,简直不摆了,继续整起走!</div>
+      <div v-on:click="playvoice(3)">各位哥老倌你们慢慢耍!有事,先撤飘啦!</div>
+      <div v-on:click="playvoice(4)">啥子牌嘛,霉得起冬瓜灰喔!</div>
+      <div v-on:click="playvoice(5)">喔豁,遭得惨!</div>
+      <div v-on:click="playvoice(6)">过场多哦,夯实</div>
+      <div v-on:click="playvoice(7)">整撑头了,各位哥老倌久等啦!</div>
+      <div v-on:click="playvoice(8)">白扯扯了遭春天!闯了鬼唛!</div>
+      <div v-on:click="playvoice(9)">大家好!初次见面,交个朋友噻!</div>
+    </div>
+    <!-- 玩家等待区域 -->
+    <div class="p-wait" v-if="start==false">
+      <div v-for="p in waits">
+        <div class="p-header">
+          <img v-bind:src="p.header" >
+        </div>
+
+        <p>{{p.name}}</p>
+        <img src="../image/game/game_ready.png" v-if="p.isready">
+        <img src="../image/game/game_unready.png" v-else>
+      </div>
+    </div>
+    <!-- 游戏设置画面 -->
+    <div v-if="gamesetting.isshow" class="gameset">
+      <div class="main">
+          <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closegameset">
+          <div class="info">
+            <div >音效:&nbsp;&nbsp;<img src="../image/setting_on.png" v-if="voice==1" v-on:click="voiceswitch(1)"><img src="../image/setting_off.png" v-else v-on:click="voiceswitch(0)"></div>
+            <div >音乐:&nbsp;&nbsp;<img src="../image/setting_on.png" v-if="music==1" v-on:click="musicswitch(1)"><img src="../image/setting_off.png" v-else v-on:click="musicswitch(0)"></div>
+            <!-- <div v-on:click="voicechoose('方言')">方言&nbsp;&nbsp;<img src="../image/newroom_unchoose.png" v-if="putonghua==1" ><img src="../image/newroom_chooseed.png" v-else></div>
+            <div v-on:click="voicechoose('普通话')">普通话&nbsp;&nbsp;<img src="../image/newroom_unchoose.png" v-if="putonghua==0" ><img src="../image/newroom_chooseed.png" v-else></div> -->
+          </div>
+      </div>
+    </div>
+    <!-- 左上角信息 -->
+    <div class="room_info">
+        <p>房间号: {{gameinfo.roomcode}}</p>
+        <p v-if="start">第{{gameinfo.round}}/{{gameinfo.rounds}}局</p>
+        <p v-if="start">倍率: {{gameinfo.double}}</p>
+    </div>
+
+    <!-- 打牌啦 -->  <!-- 打牌啦 -->  <!-- 打牌啦 -->  <!-- 打牌啦 -->  <!-- 打牌啦 -->
+
+    <!-- 下家/我自己 -->
+    <div id="down" v-if="start">
+      <div class="poker" v-bind:style="{marginLeft:pyz}"  v-on:touchstart="touchstart($event)" v-on:touchend="touchend($event)"  v-on:touchmove="touch($event)">
+        <div v-for="p in mypoker" v-on:click="choicepoker(p)" class="nowmypoker" v-bind:id='p.id'><img v-bind:src="p.src" v-bind:style="{top:p.selected?'-20%':'0'}"><img src="../image/game/first.png" v-if='p.first' id="firstpoker"></div>
+      </div>
+      <div class="info">
+        <div>
+          <div>{{allplayer[0].name}}</div>
+          <div>积分:&nbsp;{{allplayer[0].score}}</div>
+          <div>剩余:&nbsp;{{allplayer[0].pokers}}张</div>
+        </div>
+        <img v-bind:src="allplayer[0].header">
+        <img src="../image/home_header_border.png" class="herder-border"  >
+      </div>
+    </div>
+
+    <!-- 右家 -->
+    <div id="right" v-if="start" style="right:0">
+      <div class="poker">
+        <div v-for="p in allplayer[1].pokersarr"><img v-bind:src="p.src?p.src:adback" v-if="gameinfo.showpoker==1"></div>
+      </div>
+      <div class="info">
+        <img src="../image/home_header_border.png" class="herder-border ">
+        <img v-bind:src="allplayer[1].header">
+        <p>{{allplayer[1].name}}</p>
+        <p>积分:{{allplayer[1].score}}</p>
+        <p v-if="gameinfo.showpoker==1">剩余:{{allplayer[1].pokers}}张</p><p v-else>不显示手牌</p>
+      </div>
+    </div>
+
+    <!-- 上家 -->
+    <div id="up" v-if="start">
+        <div class="info">
+          <div>
+            <p>{{allplayer[2].name}}</p>
+            <p>积分:{{allplayer[2].score}}</p>
+            <p v-if="gameinfo.showpoker==1">剩余:{{allplayer[2].pokers}}张</p><p v-else>不显示手牌</p>
+          </div>
+          <img v-bind:src="allplayer[2].header">
+          <img src="../image/home_header_border.png" class="herder-border" >
+        </div>
+        <div class="poker">
+          <div v-for="p in allplayer[2].pokersarr"><img v-bind:src="p.src?p.src:adback" v-if="gameinfo.showpoker==1"></div>
+        </div>
+    </div>
+
+    <!-- 左家 -->
+    <div id="left" v-if="start">
+      <div class="poker">
+        <div v-for="p in allplayer[3].pokersarr"><img v-bind:src="p.src?p.src:adback" v-if="gameinfo.showpoker==1"></div>
+      </div>
+      <div class="info">
+        <img src="../image/home_header_border.png" class="herder-border" >
+        <img v-bind:src="allplayer[3].header">
+        <p>{{allplayer[3].name}}</p>
+        <p>积分:{{allplayer[3].score}}</p>
+        <p v-if="gameinfo.showpoker==1">剩余:{{allplayer[3].pokers}}张</p><p v-else>不显示手牌</p>
+      </div>
+    </div>
+
+    <!-- 出牌 -->
+    <div id="out" class="downout">
+      <div v-for="p in outpoker"><img v-bind:src="p.src"><img src="../image/game/first.png" v-if='p.first' id="firstpoker"></div>
+    </div>
+
+    <!-- 出牌按钮 -->
+    <div class="outbtn" v-if='isout'><div v-if="iswatch==false" v-on:click="surepoker">出&nbsp;&nbsp;&nbsp;牌</div></div>
+    <div class="outtiper" v-if='isout'><div v-if="iswatch==false"  v-on:click="gettips">提&nbsp;&nbsp;&nbsp;示</div></div>
+
+    <!-- 动画提示 -->
+    <div id="animate">
+      <img v-bind:src="animatetip">
+    </div>
+    <!-- 过牌动画 -->
+    <div id="passanimate" class="" v-bind:style="passanimatestyle">
+    </div>
+
+    <!-- 该谁出牌的提示 -->
+    <img src="../image/game/game_outtip.png" v-bind:class="whoout" class="outtip">
+
+    <!-- 结算界面 -->
+    <div id="end" v-if="isend">
+      <div class="main">
+        <img v-bind:src="gameinfo.endround">
+        <div class="title">
+          <div>倍率:{{gameinfo.double}}倍</div>
+          <div>炸弹:{{gameinfo.booms}}炸</div>
+        </div>
+        <div class="info" v-bind:class="isoverclass">
+          <table>
+            <tr><th>昵称</th><th>本局积分</th><th>总积分</th></tr>
+            <tr v-for="p in endinfo"><td>{{p.name}}</td><td v-if="p.scorenow >= 0" class="zheng">{{p.scorenow}}</td><td v-else class="fu">{{p.scorenow}}</td><td v-if="p.score >= 0" class="zheng">{{p.score}}</td><td v-else class="fu">{{p.score}}</td></tr>
+          </table>
+        </div>
+        <p v-if="iswatch==false"><img src="../image/game/game_end_share.png"  v-if="isfinal" v-on:click="shareresulit"><img v-else src="../image/game/game_end_ready.png" v-on:click="gamegoon"></p>
+      </div>
+    </div>
+
+
+    <!-- 压牌 -->
+    <div  class="backpoker" v-if="isback">
+      <div v-for="p in backpoker">
+        <img v-bind:src="p.src">
+      </div>
+    </div>
+
+    <!-- 结算界面准备区域 -->
+    <div v-if="isend" class="endready">
+      <div v-if="isover" v-on:click="outroom" id="outroom">退出房间</div>
+      <div v-else>
+        <div class="item" v-for="p in waits" v-if="p.isready == false">{{p.name}} <span></span></div>
+        <div class="itemed" v-for="p in waits" v-if="p.isready">{{p.name}} <span></span></div>
+      </div>
+    </div>
+
+    <!--  同意解散界面  -->
+    <div id="clear">
+      <div id="clear2">
+        <div class="info">
+          <div v-for="w in waits">
+              <img v-bind:src="w.header">
+              <p>{{w.name}}</p>
+              <p><span v-if="w.isagree==1" style="color:green">同意</span> <span v-if="w.isagree==0" style="color:red">拒绝</span><span v-if="w.isagree==2">未操作</span> </p>
+          </div>
+        </div>
+        <p>{{cleartip}}</p>
+
+
+        <div class="btn" >
+          <div id="clear-left" v-on:click="agreeclear(0)">拒绝</div>
+          <div id="clear-right" v-on:click="agreeclear(1)">同意</div>
+        </div>
+
+        <div class="status"></div>
+      </div>
+    </div>
+
+
+
+  </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript" src="../script/game.js"></script>
+</html>

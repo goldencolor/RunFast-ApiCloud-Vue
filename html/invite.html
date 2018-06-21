@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>邀请</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:70%;
+          height:80%;
+          background-image: url(../image/invite_bg.png);
+          background-size: 100% 100%;
+          margin: 7% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:80%;
+          height:60%;
+          position: relative;
+          top:25%;
+          left:10%;
+        }
+        .info .top,.info .inp {
+          width:100%;
+          height:33%;
+          text-align: center;
+          font-size: 15px;
+          color:#B0792C;
+        }
+        .info .inp p {
+          color:#DEB376;
+          font-size: 11px;
+        }
+        .info .inp input {
+          width:80%;
+          height:60%;
+          margin:0 auto;
+          border-radius: 10px;
+          border:1px solid #AA721F;
+          outline:none;
+          background-color: #D9A863;
+          color:#BE863A;
+          text-align: center;
+          line-height: 220%;
+          font-size: 16px;
+        }
+        .left,.right  {
+          width: 32%;
+          height:23%;
+          background-image: url(../image/invite_return.png);
+          background-size: 100% 100%;
+          position: absolute;
+          bottom:5%;
+          left:16%;
+        }
+        .right {
+          left:54%;
+        }
+        .right img {
+          width:100%;
+          height:100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak >
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="info">
+              <div class="top">{{tips}}</div>
+              <div class="inp">
+                  <input type="text" placeholder="请输入邀请码" id="inp">
+                  <p>( 绑定成功后无法解除绑定 )</p>
+              </div>
+              <div class="left" v-on:click="closeme"></div>
+              <div class="right" >
+                <img src="../image/invite_unsure.png" v-if="isbd">
+                <img src="../image/invite_sure.png" v-else v-on:click="sure">
+              </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+    var app = new Vue({
+      el:"#app",
+      data:{
+        tips:"绑定邀请码,每次充值可享受额外20%加送,首次绑定额外赠送8个钻石!",
+        //是否绑定了上级
+        isbd:false
+      },
+      methods:{
+        //全局点击
+        allclick:function(){
+          music_nomal();
+        },
+        closeme:function(){
+          api.closeFrame({
+              name: '邀请'
+          });
+        },
+        //绑定
+        sure:function(){
+          //进度框
+          var t = setTimeout(function(){
+            api.showProgress({
+                title: '绑定中',
+                modal: true,
+                animationType: 'zoom',
+            });
+          },1000)
+
+          setTimeout(function(){
+            api.hideProgress();
+          },5000)
+          $api.post(o_url + 'invite_think',{
+            values:{
+              cid:$api.getStorage("token"),
+              code:$api.dom("#inp").value,
+            }
+          },function(ret){
+            clearTimeout(t)
+            api.toast({msg:ret.msg,location:'middle'});
+            api.hideProgress();
+          },'json');
+        },
+      }
+    })
+
+    //进度框
+    var t = setTimeout(function(){
+      api.showProgress({
+          title: '加载中',
+          modal: true,
+          animationType: 'zoom',
+      });
+    },1000)
+
+    setTimeout(function(){
+      api.hideProgress();
+    },5000)
+    $api.post(o_url + 'invite_page',{
+      values:{
+        cid:$api.getStorage("token"),
+      }
+    },function(ret){
+      if(ret.msg != ""){
+        $api.dom("#inp").value = ret.msg;
+        app.isbd = true;
+      }
+      clearTimeout(t)
+      api.hideProgress();
+    },'json');
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+  }
+
+</script>
+</html>

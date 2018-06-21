@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>分享</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:50%;
+          height:50%;
+          background-image: url(../image/share_bg.png);
+          background-size: 100% 100%;
+          margin: 17% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:80%;
+          height:60%;
+          position: relative;
+          top:25%;
+          left:10%;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:nowrap;
+          justify-content: space-around;
+          align-items: center;
+        }
+        .info .wx, .info .wxf {
+          width:22%;
+          height:50%;
+          background-size: 100% 100%;
+          background-image: url(../image/wxf_logo.png);
+          position: absolute;
+          top:30%;
+          left:15%;
+        }
+        .info .wx {
+          background-image: url(../image/wx_logo.png);
+          left:60%;
+        }
+        .info .wx p,.info .wxf p {
+          width:120%;
+          height:20px;
+          font-size: 14px;
+          text-align: center;
+          color:#BD883A;
+          position: relative;
+          top:110%;
+          left:-10%;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak >
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="info">
+                <div class="wxf" v-on:click="sharef"><p>朋友圈</p></div>
+                <div class="wx" v-on:click="sharep"><p>微信好友</p></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+    var app = new Vue({
+      el:"#app",
+      data:{
+
+      },
+      methods:{
+        //全局点击
+        allclick:function(){
+          music_nomal();
+        },
+        closeme:function(){
+          api.closeFrame({
+              name: '分享'
+          });
+        },
+        //分享到朋友圈
+        sharef:function(){
+          var wx = api.require('wx');
+          wx.isInstalled(function(ret, err) {
+              if (ret.installed) {
+                wx.shareWebpage({
+                    apiKey: '',
+                    scene: 'timeline',
+                    title: '四川跑得快-最容易上手的棋牌游戏',
+                    description: '四川跑得快,玩法简单有趣,大家一起来玩吧!',
+                    thumb : 'widget://res/iconfont-touxiang.png',
+                    contentUrl: 'http://www.oumaikeji.com'
+                }, function(ret, err) {
+                  if (ret.status) {
+                    //alert(JSON.stringify(ret))
+                    api.toast({msg:'分享成功',location:'middle'});
+                  } else {
+                    //alert(JSON.stringify(err))
+                    api.toast({msg:'分享失败,请重试',location:'middle'});
+                  }
+                });
+              } else {
+                  api.toast({msg:'您还未安装微信',location:'middle'});
+              }
+          });
+        },
+        //分享给朋友
+        sharep:function(){
+          var wx = api.require('wx');
+          wx.isInstalled(function(ret, err) {
+              if (ret.installed) {
+                wx.shareWebpage({
+                    apiKey: '',
+                    scene: 'session',
+                    title: '四川跑得快-最容易上手的棋牌游戏',
+                    description: '四川跑得快,玩法简单有趣,大家一起来玩吧!',
+                    thumb : 'widget://res/iconfont-touxiang.png',
+                    contentUrl: 'http://www.oumaikeji.com'
+                }, function(ret, err) {
+                  if (ret.status) {
+          					//alert(JSON.stringify(ret))
+                    api.toast({msg:'分享成功',location:'middle'});
+          				} else {
+          					//alert(JSON.stringify(err))
+                    api.toast({msg:'分享失败,请重试',location:'middle'});
+          				}
+                });
+              } else {
+                  api.toast({msg:'您还未安装微信',location:'middle'});
+              }
+          });
+        },
+      }
+    })
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+  }
+
+</script>
+</html>

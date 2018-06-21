@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>玩法</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:70%;
+          height:80%;
+          background-image: url(../image/rule_bg.png);
+          background-size: 100% 100%;
+          margin: 7% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:80%;
+          height:60%;
+          position: relative;
+          top:25%;
+          left:10%;
+          overflow-y: scroll;
+          font-size: 12px;
+          color:#BD883A;
+          text-align: left;
+        }
+        .info::-webkit-scrollbar {
+            display: none;
+        }
+        .info p{
+          text-align: center;
+          font-size: 14px;
+          padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="info" v-html="content"></div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+    var app = new Vue({
+      el:"#app",
+      data:{
+        content:`<p>乐山玩法</p><br/>
+                概述: 四人牌张数一共40张, 除去234花和大小王(压牌玩法保留4), 即5-A(压牌玩法4-A), 有牌必打. <br/><br/>
+                房间类型:<br/><br/>
+                1. 黑桃5上庄: 即每局都是黑桃5先出牌 (第一手牌必须带上5). <br/>
+                2. 霸王庄: 第一局黑桃5先出牌, 后剩下的局数赢家先出牌(随意出). <br/>
+                3. 压牌随机庄: 开局前压4张底牌(所有人都不能看见), 从4家人的手牌中随机一张牌作为庄牌, 有庄牌的先出且第一手必须带上庄牌. <br/>
+                4. 压牌霸王庄: 开局前压4张底牌(所有人都不能看见), 第一局随机庄牌, 之后由赢家先出牌(随意出). <br/><br/>
+                出牌类型:<br/><br/>
+                1. 单张: 单次打出一张牌, 4最小, A最大. <br/>
+                2. 对子: 单次打出2张相同大小的牌, 如:55, QQ 等等. <br/>
+                3. 顺子: 单次打出3张连续大小的牌, 如:567, JQK 等等. <br/>
+                4. 连对: 单次打出连续大小的对子, 如:5566, JJQQ 等等. <br/>
+                5. 飞机: 单次打出3张相同大小的牌, 如:555, QQQ 等等 也可以连续大小的 如:555666, JJJQQQ 等等. <br/>
+                6. 炸弹: 单次打出4张相同的牌, 如:5555, QQQQ 等等, 炸弹可以大过其他所有类型的牌. <br/>
+                7. 除炸弹外, 不同类型的牌不可以相互打, 如: 上家出单牌, 下家则必须出单牌类型. <br/><br/>
+                分数计算:<br/><br/>
+                1. 底分: 所有牌局默认底分为1分. <br/>
+                2. 倍率: 初始倍率为1, 炸弹不翻倍的情况下倍率一直是1, 在炸弹翻倍的情况下, 每打出一个炸弹, 倍率乘以2 (若出现春天, 则被春天的玩家不论该局是否是炸弹翻倍, 都要按翻倍的情况计算). <br/>
+                3. 炸弹: 当某玩家打出炸弹时, 若为炸弹翻倍, 则本局倍率乘以2. 另外, 当本局游戏结束时, 没有打出炸弹的玩家需要给本局打出最大的炸弹的玩家额外10积分. <br/>
+                4. 春天: 当该局游戏结束, 某玩家一张牌都没有出过, 则判定为春天, 倍率会乘以2, 且若有炸弹出现, 则不论是否是炸弹翻倍, 倍率都要根据炸弹的倍率翻倍. <br/>
+                5. 报单: 当某玩家手里只有一张牌的时候, 即判定为报单, 报单的玩家本局不扣除积分, 但如果除赢家外其余3家都报单, 则最后报单的玩家需要扣除相当于10张手牌的积分. <br/>
+                6. 综合计算: 输家积分的计算方式为:  底分 X 倍率 X 剩余牌数 + 额外炸弹分  <br/>
+                        底分: 1<br/>
+                        倍率: 根据是否炸弹翻倍, 炸弹数量, 是否春天来计算<br/>
+                        剩余牌数: 若报单, 则为0. 若3加报单, 则最后报单的为10. 其余情况按实际剩余计算<br/>
+                        额外炸弹分: 若只有一人出了炸弹, 则其他3人向他支付10积分, 若多人出了炸弹则没有出炸弹的玩家, 向出了最大炸弹的玩家支付10积分.<br/>
+
+                `
+          ,
+      },
+      methods:{
+        closeme:function(){
+          api.closeFrame({
+              name: '玩法'
+          });
+        }
+      }
+    })
+
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+  }
+
+</script>
+</html>

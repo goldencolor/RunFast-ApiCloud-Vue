@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>游戏详情</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0);
+        }
+        [v-cloak]{
+          display:none
+        }
+        #app {
+          background-image: url(../image/game/game_winbg.png);
+          background-size: 100% 100%;
+        }
+        #app>p {
+          width:100%;
+          height:10%;
+          text-align: center;
+          font-size: 13px;
+          color:white;
+          padding-top:5px
+        }
+        .info {
+          width:100%;
+          height:80%;
+          margin-top:10%;
+          overflow-y: scroll;
+          font-size: 12px;
+          color:#BD883A;
+          text-align: center;
+        }
+        .info::-webkit-scrollbar {
+            display: none;
+        }
+        .info > div {
+          width:75%;
+          height:15px;
+          margin:0 auto;
+          margin-bottom:10px;
+          border-radius: 5px;
+          background-color: #F9BB72;
+          box-shadow:1px 1px 5px grey inset;
+          line-height: 15px;
+          padding:10px;
+          font-size: 10px;
+          color:#FB790C;
+          text-align: left;
+        }
+        .info > div span {
+          float:right;
+          font-size: 13px;
+          color:#B66533;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak v-on:click="closeme">
+        <p>规则</p>
+        <div class="info">
+          <div>游戏类型<span>{{gametype}}</span></div>
+          <div>炸弹翻倍<span>{{isboom}}</div>
+          <div>庄家规则<span>{{gamechoice}}</div>
+            <div>手牌显示<span>{{showpoker}}</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+
+    var app = new Vue({
+      el:"#app",
+      data:{
+        gametype:"",  //游戏类型   1.黑桃5上庄  2.霸王庄  3.瞎子模式
+        isboom:"", //炸弹翻倍   true 翻倍    false 不翻倍
+        gamechoice:"", //游戏选择   1.随机庄     2.霸王庄
+        showpoker:"",//显示牌数   1.显示    2.不显示
+      },
+      methods:{
+        //关闭
+        closeme:function(){
+          setTimeout(function(){
+            api.closeFrame({
+                name: '游戏详情'
+            });
+          },200)
+        }
+      }
+    })
+    switch(api.pageParam.gametype){
+      case 1:
+        app.gametype = "黑桃5上庄";
+        app.gamechoice = "黑桃5上庄";
+        break;
+      case 2:
+        app.gametype = "霸王庄";
+        app.gamechoice = "霸王庄";
+        break;
+      case 3:
+        app.gametype = "压牌模式";
+        break;
+    }
+    switch(api.pageParam.isboom){
+      case true:
+        app.isboom = "炸弹翻倍";
+        break;
+      case false:
+        app.isboom = "炸弹不翻倍";
+        break;
+    }
+    if(api.pageParam.gametype == 3 && api.pageParam.gamechoice == 1){
+      app.gamechoice = "随机庄";
+    }else if(api.pageParam.gametype == 3 && api.pageParam.gamechoice == 2){
+      app.gamechoice = "霸王庄";
+    }
+    if(api.pageParam.showpoker == 0){
+      app.showpoker = "不显示牌数";
+    }else {
+      app.showpoker = "显示牌数";
+    }
+
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+  }
+
+</script>
+</html>

@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>加入房间</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:60%;
+          height:80%;
+          background-image: url(../image/joinroom_bg.png);
+          background-size: 100% 100%;
+          margin: 7% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:80%;
+          height:60%;
+          position: relative;
+          top:25%;
+          left:10%;
+        }
+        .info>input {
+          display:block;
+          width:80%;
+          height:30px;
+          background-color: #EAA84A;
+          border:1px solid #C18836;
+          line-height: 30px;
+          text-align: center;
+          font-size: 20px;
+          color:#C18836;
+          position: relative;
+          top:0%;
+          left:10%;
+        }
+        .info>div {
+          width:80%;
+          height:80%;
+          position: relative;
+          top:10%;
+          left:10%;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:wrap;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .info>div div {
+          width:31%;
+          height:20%;
+          border-radius: 10%;
+          background-color: #EAA84A;
+          box-shadow: 1px 1px 5px #C18836;
+          color:#C18836;
+          text-align: center;
+          font-size: 22px;
+          line-height: 140%;
+        }
+        .main_title {
+          position: absolute;
+          top:27%;
+          width:100%;
+          font-size: 20px;
+          text-align: center;
+          color:#BA853B;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="info">
+                <input type="number" id="roomid" placeholder="请输入房间号" v-model="roomcode" readonly="readonly">
+                <div>
+                  <div v-on:click="addnum(1)">1</div><div v-on:click="addnum(2)">2</div><div v-on:click="addnum(3)">3</div>
+                  <div v-on:click="addnum(4)">4</div><div v-on:click="addnum(5)">5</div><div v-on:click="addnum(6)">6</div>
+                  <div v-on:click="addnum(7)">7</div><div v-on:click="addnum(8)">8</div><div v-on:click="addnum(9)">9</div>
+                  <div  v-on:click="delnum">删除</div><div v-on:click="addnum(0)">0</div><div  v-on:click="joinroom">确定</div>
+                </div>
+            </div>
+        </div>
+        <p class="main_title"></p>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+    var app = new Vue({
+      el:"#app",
+      data:{
+        roomcode:""
+      },
+      methods:{
+        //增加数字
+        addnum:function(k){
+          music_small();
+          this.roomcode += k;
+        },
+        //删除最后一位
+        delnum:function(){
+          music_small();
+          this.roomcode = this.roomcode.substring(0,this.roomcode.length-1)
+        },
+        closeme:function(){
+          api.closeFrame({
+              name: '加入'
+          });
+        },
+        //加入房间
+        joinroom:function(){
+          music_nomal();
+          var that = this;
+          //进度框
+          var t = setTimeout(function(){
+            api.showProgress({
+                title: '加入中',
+                modal: true,
+                animationType: 'zoom',
+            });
+          },1000)
+
+          setTimeout(function(){
+            api.hideProgress();
+          },5000)
+          $api.post(o_url + 'join_room',{
+            values:{
+              cid:$api.getStorage("token"),
+              room_code:that.roomcode,
+            }
+          },function(ret){
+            clearTimeout(t)
+            api.hideProgress();
+            if(ret.error == 0){
+              //执行脚本
+              api.execScript({
+                  script: jsfun
+              });
+              var roomid,gametype,isboom,gamechoice,rounds,owner;
+              owner = ret.msg.start_btn;
+              if(ret.msg.double == 1){
+                isboom = true;
+              }else {
+                isboom = false;
+              }
+              roomcode = $api.dom("#roomid").value;
+              switch(ret.msg.room_type){
+                case "0":
+                  gametype = 1;
+                  gamechoice = 0;
+                  break;
+                case "1":
+                  gametype = 2;
+                  gamechoice = 0;
+                  break;
+                case "2":
+                  gametype = 3;
+                  gamechoice = 1;
+                  break;
+                case "3":
+                  gametype = 3;
+                  gamechoice = 2;
+                  break;
+              }
+              rounds = ret.msg.round_times;
+              api.openWin({
+                  name: '游戏',
+                  url: '../html/game.html',
+                  slidBackEnabled:false,
+                  animation: {
+                    type:winChange,
+                    duration:500
+                  },
+                  pageParam:{
+                    roomid:ret.msg.room_id,
+                    roomcode:roomcode,
+                    gametype:gametype,
+                    isboom:isboom,
+                    gamechoice:gamechoice,
+                    rounds:rounds,
+                    showpoker:ret.msg.showpoker,
+                    owner:owner
+                  },
+                  delay:100,
+                  reload:true
+              });
+
+              setTimeout(function(){
+                that.closeme();
+                api.closeWin({
+                    name: '主页'
+                });
+              },2000)
+            }else {
+              api.toast({msg:ret.msg,location:'middle'});
+            }
+          },'json');
+        },
+
+      }
+    })
+
+
+    //在当前window中执行jsfun脚本  关闭音乐
+    var jsfun = 'closemusic();';
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+  }
+
+</script>
+</html>

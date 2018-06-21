@@ -1,0 +1,436 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>邀请</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        html,body,#app{
+          width:100%;
+          height:100%;
+          overflow: hidden;
+          background-color: rgba(0,0,0,0.1);
+        }
+        [v-cloak]{
+          display:none
+        }
+        .main {
+          width:70%;
+          height:80%;
+          background-image: url(../image/recharge_bg.png);
+          background-size: 100% 100%;
+          margin: 7% auto;
+        }
+        .close {
+          width:30px;
+          height:30px;
+          float:right;
+          position: relative;
+          left:10px;
+          top:-10px;
+        }
+        .info {
+          width:90%;
+          height:60%;
+          position: relative;
+          top:25%;
+          left:5%;
+          overflow: scroll;
+        }
+        .info::-webkit-scrollbar {
+            display: none;
+        }
+        .info .money {
+          width:200%;
+          height:100%;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:nowrap;
+          justify-content: space-between;
+          align-items: flex-end;
+
+        }
+        .info .money .item{
+          width:17%;
+          height:90%;
+          background-size: 100% 100%;
+          background-image: url(../image/recharge_money_bg.jpg);
+        }
+        .info .money .item p {
+          width:100%;
+          height:30%;
+          color:#FAF618;
+          font-size: 12px;
+          line-height: 400%;
+          text-align: center;
+        }
+        .info .money .item img {
+          width:60%;
+          height:50%;
+          position: relative;
+          left:20%;
+          top:-10px
+        }
+        .info .money .item div {
+          width:60%;
+          height:20%;
+          margin:0 auto;
+          background-image: url(../image/recharge_btn.png);
+          background-size: 100% 100%;
+          color:#FDF6E8;
+          text-align: center;
+          line-height: 160%;
+          position:relative;
+          top:-7%
+        }
+        .up , .down {
+          height:25%;
+          width:5%;
+          background-size: 100% 100%;
+          position: absolute;
+          bottom:20%;
+          left:10%;
+          z-index: 1;
+        }
+        .up {
+            bottom:40%;
+            z-index:9
+        }
+        .up div, .down div {
+          width:15px;
+          margin:0 auto;
+          margin-top:32%;
+          font-size: 12px;
+          color:#FDF6E8;
+        }
+
+        .lists {
+          width:100%;
+          height:100%;
+          overflow-y: scroll;
+        }
+        .lists > p {
+          width:100%;
+          height:20px;
+          position: relative;
+          top:40%;
+          color:#BD883A;
+          text-align: center;
+          font-size: 14px;
+        }
+        .lists > div {
+          width:100%;
+          height:90%;
+          position: relative;
+          top:10%;
+          overflow-y: scroll;
+        }
+        .lists > div::-webkit-scrollbar {
+            display: none;
+        }
+        .lists > div > table {
+          width:100%;
+          text-align: center;
+        }
+        .lists > div > table th{
+          height:30px;
+          line-height:30px;
+          font-size: 10px;
+          color:#B97B43;
+        }
+        .lists > div > table td{
+          height:30px;
+          line-height:30px;
+          background-color: #EFB97D;
+          font-size: 10px;
+          color:#B97B43;
+        }
+        .loading {
+          text-align: left;
+        }
+        .loading img {
+          width:15px;
+          height:15px;
+          position: relative;
+          top:3px
+        }
+        #title {
+          position: fixed;
+          top:28.5%;
+          width:63%;
+          background-color: #EFB97D;
+          display: flex;
+          flex-direction: row;
+          flex-wrap:nowrap;
+          justify-content: space-around;
+          align-items: flex-end;
+        }
+        #title th:nth-child(1){
+          width:35%
+        }
+        #title th:nth-child(5){
+          width:30%
+        }
+        .info .money .item  .gift {
+          position: relative;
+          width:50px;
+          height:50px;
+          background-image: url(../image/home_gift.png);
+          background-size: 100% 100%;
+          top:-70%;
+          left:30%;
+        }
+        .info .money .item  .gift span{
+          color:white;
+          font-size: 12px;
+          position: relative;
+          display: block;
+          top:40%;
+          transform: rotate(5deg);
+        }
+        .wechat {
+          width:30%;
+          height: 45%;
+          position: fixed;
+          z-index: 99999;
+          top:30%;
+          left:35%;
+          background-color: #fff;
+          color:#000;
+          padding-top:3%;
+          text-align: center;
+          border-radius: 20px;
+        }
+        .wechat img {
+          width:30%;
+          height:35%;
+          margin-top:10px;
+        }
+        .wechat p {
+          margin：20px；
+        }
+        .wechat b, .wechat span {
+          color:red
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak >
+        <div class='wechat'>
+          <h3>确认订单</h3>
+          <p>商品：钻石 <span>6</span> 个</p>
+          <p>价格：<b>6.00</b> 元</p>
+          <p>支付方式：微信支付</p>
+          <img src="../image/wx_logo.png">
+        </div>
+        <div class="main">
+            <img src="../image/close_btn.png" alt="关闭" class="close" v-on:click="closeme">
+            <div class="info">
+              <div class="money" v-if="is_money">
+                <div class="item" v-for="li in items">
+                  <p>{{li.value}}个钻石</p>
+                  <img v-bind:src="li.src">
+                  <div v-on:click="buy(li.id)">￥ {{li.money}}</div>
+                  <div class="gift" v-if="li.add!=0"><span>{{li.add}}个</span></div>
+                </div>
+              </div>
+
+              <div class="lists" v-else >
+                  <div v-if="haslist" class="haslist" v-on:scroll="scroll">
+                    <table class="table">
+                      <tr id="title"><th>订单号</th><th>充值数量</th><th>充值金额</th><th>邀请码</th><th>时间</th></tr>
+                      <tr v-for="r in record"><td width="35%">{{r.order_sn}}</td><td>{{r.diamond_nums}}</td><td>{{r.pay_money}}</td><td>{{r.qcoder}}</td><td width="30%">{{r.pay_date}}</td></tr>
+                      <tr><td></td><td></td><td class="loading"><img  src="../image/loading_more.gif" v-if="loading"></td><td></td><td></td></tr>
+                    </table>
+                  </div>
+                  <p v-else>{{listtip}}</p>
+              </div>
+            </div>
+        </div>
+        <div class="up" v-bind:style="up_bg" v-on:click="changemoney"><div>充值钻石</div></div>
+        <div class="down" v-bind:style="down_bg" v-on:click="changelist"><div>充值记录</div></div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/fastclick.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script>
+  apiready = function(){
+
+
+    var app = new Vue({
+      el:"#app",
+      data:{
+        items:[
+          // {value:"6",src:"../image/recharge_stone1.png",money:"6"},
+          // {value:"18",src:"../image/recharge_stone2.png",money:"18"},
+          // {value:"30",src:"../image/recharge_stone3.png",money:"30"},
+          // {value:"68",src:"../image/recharge_stone4.png",money:"68"},
+          // {value:"128",src:"../image/recharge_stone5.png",money:"128"},
+          // {value:"328",src:"../image/recharge_stone6.png",money:"328"},
+        ],
+        //是否是 红包界面
+        is_money:true,
+        //充值背景
+        up_bg:{backgroundImage:"url(../image/home_checked.png)",zIndex:'9'},
+        //记录背景
+        down_bg:{backgroundImage:"url(../image/home_uncheck.png)",zIndex:'1'},
+        //是否有充值记录
+        haslist:true,
+        //没有充值记录时候的提示
+        listtip:"还没有充值记录,快去充值吧!",
+        //是否在加载中...
+        loading:false,
+        //充值记录
+        record:[],
+        //页码
+        page:1,
+      },
+      methods:{
+        //scroll
+        scroll:function(){
+          if(app.loading == true){return;}
+          var s_top = $api.dom('.haslist').scrollTop;
+          var w_top = $api.dom('.haslist').clientHeight;
+          var all_top = $api.dom('.table').clientHeight;
+          if((s_top +  w_top)  >=  all_top){
+            app.loading = true;
+            //获取充值记录
+            $api.post(o_url + 'recharge_list',{
+              values:{
+                cid:$api.getStorage("token"),
+                page:app.page,
+              }
+            },function(ret){
+                app.loading = false;
+                if(ret.msg.length == 0){
+                  api.toast({msg:"没有更多了",location:'middle'})
+                  return;
+                }
+                app.page++;
+                for(var i=0,len=ret.msg.length;i<len;i++){
+                  var obj = {};
+                  obj.order_sn = ret.msg[i].order_sn;
+                  obj.diamond_nums = ret.msg[i].diamond_nums;
+                  obj.pay_money = ret.msg[i].pay_money;
+                  obj.qcoder = ret.msg[i].qcoder;
+                  obj.pay_date = getLocalTime(ret.msg[i].pay_date);
+                  app.record.push(obj);
+                }
+            },'json');
+          }
+        },
+        closeme:function(){
+          api.closeFrame({
+              name: '充值'
+          });
+        },
+        changemoney:function(){
+            this.is_money = true;
+            this.up_bg = {backgroundImage:"url(../image/home_checked.png)",zIndex:'9'};
+            this.down_bg = {backgroundImage:"url(../image/home_uncheck.png)",zIndex:'1'};
+            music_nomal();
+        },
+        changelist:function(){
+          this.is_money = false;
+          this.down_bg = {backgroundImage:"url(../image/home_checked.png)",zIndex:'9'};
+          this.up_bg = {backgroundImage:"url(../image/home_uncheck.png)",zIndex:'1'};
+          music_nomal();
+        },
+        buy:function(id){
+          sure('购买钻石','确定要购买该钻石吗?',function(){
+            //进度框
+            var t = setTimeout(function(){
+              api.showProgress({
+                  title: '购买中',
+                  modal: true,
+                  animationType: 'zoom',
+              });
+            },1000)
+
+            setTimeout(function(){
+              api.hideProgress();
+            },5000)
+            $api.post(o_url + 'recharge_think',{
+              values:{
+                cid:$api.getStorage("token"),
+                goods_id:id
+              }
+            },function(ret){
+              api.toast({msg:ret.msg,location:'middle'});
+              clearTimeout(t)
+              api.hideProgress();
+              api.execScript({
+                  script: jsfun
+              });
+            },'json');
+          });
+        },
+      }
+    })
+
+    //获取产品信息
+    //进度框
+    var t = setTimeout(function(){
+      api.showProgress({
+          title: '加载中',
+          modal: true,
+          animationType: 'zoom',
+      });
+    },1000)
+
+    setTimeout(function(){
+      api.hideProgress();
+    },5000)
+    $api.post(o_url + 'goods_show',{
+      values:{
+        cid:$api.getStorage("token"),
+      }
+    },function(ret){
+      clearTimeout(t);
+      api.hideProgress();
+      for(var i=0,len=ret.msg.length;i<len;i++){
+        var obj={};
+        obj.value = ret.msg[i].diamond;
+        obj.money = ret.msg[i].money;
+        obj.src = "../image/recharge_stone"+(i+1)+".png";
+        obj.id = ret.msg[i].goods_id;
+        obj.add = ret.msg[i].add_diamond;
+        app.items.push(obj);
+      }
+    },'json');
+    //获取充值记录
+    $api.post(o_url + 'recharge_list',{
+      values:{
+        cid:$api.getStorage("token"),
+        page:1
+      }
+    },function(ret){
+        app.page++;
+        for(var i=0,len=ret.msg.length;i<len;i++){
+          var obj = {};
+          obj.order_sn = ret.msg[i].order_sn;
+          obj.diamond_nums = ret.msg[i].diamond_nums;
+          obj.pay_money = ret.msg[i].pay_money;
+          obj.qcoder = ret.msg[i].qcoder;
+          obj.pay_date = getLocalTime(ret.msg[i].pay_date);
+          app.record.push(obj);
+        }
+
+    },'json');
+
+    //IOS快速点击   andriod慎用!!
+    FastClick.attach(document.body);
+
+
+    //在当前window中执行jsfun脚本  重载数据
+    var jsfun = 'reloaddata();';
+
+
+  }
+
+</script>
+</html>
